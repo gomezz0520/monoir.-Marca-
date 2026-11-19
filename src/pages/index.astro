@@ -80,11 +80,15 @@ const calle = [
           <p class="etiqueta"><span class="punto"></span> Próximo drop</p>
           <h2 class="titulo titulo-l">{tienda.drop.nombre.replace('Drop 01 — ', '')}</h2>
           <p class="drop-desc">Drop 01. Solo <strong>{tienda.drop.unidades} unidades</strong>, numeradas. Cuando se acaben, no vuelven. Te avisamos primero por WhatsApp.</p>
-          <div class="cuenta" data-cuenta={tienda.drop.fecha} role="timer" aria-label="Tiempo para el drop">
+          {tienda.drop.fecha ? (
+            <div class="cuenta" data-cuenta={tienda.drop.fecha} role="timer" aria-label="Tiempo para el drop">
             {['Días', 'Horas', 'Min', 'Seg'].map((u) => (
               <div><span class="titulo" data-unidad={u}>--</span><small>{u}</small></div>
             ))}
           </div>
+          ) : (
+            <p class="pronto-fecha titulo">Fecha muy pronto. Dejá tu número y te avisamos.</p>
+          )}
           <form class="registro" data-registro>
             <label for="wa-num" class="sr-only">Tu número de WhatsApp</label>
             <input id="wa-num" name="numero" type="tel" inputmode="tel" autocomplete="tel" placeholder="Tu WhatsApp (ej. 300 123 4567)" required pattern="[0-9 +]{10,16}" />
@@ -184,6 +188,7 @@ const calle = [
   @keyframes latido { 50% { opacity: .3; } }
   .drop-desc { color: var(--tinta-suave); max-width: 44ch; margin: 1.2rem 0 2rem; }
   .drop-desc strong { color: var(--tinta); }
+  .pronto-fecha { font-size: 1.3rem; letter-spacing: .04em; color: var(--ambar); margin: 0 0 1.6rem; }
   .cuenta { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; max-width: 420px; margin-bottom: 2rem; }
   .cuenta div { border: 1px solid var(--linea); padding: .9rem .4rem; text-align: center; }
   .cuenta span { display: block; font-size: clamp(1.8rem, 4vw, 2.6rem); font-variant-numeric: tabular-nums; }

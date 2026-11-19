@@ -46,6 +46,6 @@ Tienda web de **MONOIR**, marca de streetwear de Medellín. El brief completo es
 Recuérdale estos puntos cuando sea oportuno:
 - Comprar el **dominio** y crear el **correo** de la marca.
 - Inscribirse en **Wompi o Bold**.
-- Definir los **precios** y el **monto del envío gratis**.
+- Definir los **precios** finales (el envío ya está: $10.000, gratis desde $180.000).
 - Planear la **versión 2: cuentas de cliente y fidelización**.
 - Fijar la **fecha de lanzamiento**.

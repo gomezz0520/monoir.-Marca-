@@ -132,11 +132,13 @@
 - [x] **Dirección visual elegida: A — "NOCHE"**.
 - [ ] Comprar el **dominio** (monoir.co / monoir.com.co) y crear el **correo de la marca**.
 - [ ] Inscribirse en **Wompi o Bold** (cédula, RUT y certificado bancario).
-- [ ] Definir los **precios finales** y el **monto del envío gratis**.
+- [x] Envío: $10.000 en Medellín y el Valle de Aburrá; gratis desde $180.000 (confirmado).
+- [ ] Definir los **precios finales**.
 - [ ] Conseguir los primeros **proveedores de marca blanca** y las **etiquetas Monoir**.
 - [ ] **Fotos** de las prendas de marca blanca.
 - [ ] **Medidas** de cada prenda para la guía de tallas.
-- [ ] **Número de WhatsApp** y usuarios de Instagram y TikTok de la marca.
+- [x] WhatsApp de la tienda: +57 321 829 4282.
+- [ ] Usuarios de Instagram y TikTok de la marca (aún no existen).
 - [ ] Fijar la **fecha de lanzamiento**.
 - [ ] **Versión 2:** cuentas de cliente y fidelización (el fundador pidió que se lo recordemos).
 

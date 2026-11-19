@@ -1,0 +1,107 @@
+---
+// Ilustración temporal de cada prenda (frente o espalda) mientras no haya fotos.
+import type { Tipo } from '../data/productos';
+interface Props {
+  tipo: Tipo; color: string; lado: 'frente' | 'espalda';
+  capota?: boolean; estampado?: boolean; class?: string;
+}
+const { tipo, color, lado, capota = false, estampado = false, class: clase = '' } = Astro.props;
+
+// Costuras: un poco más claras sobre telas oscuras y más oscuras sobre claras.
+const lum = (hex: string) => {
+  const n = parseInt(hex.slice(1), 16);
+  return (0.299 * (n >> 16) + 0.587 * ((n >> 8) & 255) + 0.114 * (n & 255)) / 255;
+};
+const oscura = lum(color) < 0.45;
+const costura = oscura ? 'rgba(255,255,255,.30)' : 'rgba(0,0,0,.16)';
+const marca = oscura ? 'rgba(255,255,255,.75)' : 'rgba(0,0,0,.7)';
+const frente = lado === 'frente';
+const felinoMini = 'M46 91 C33 90 22 83 17 69 C12 53 14 34 22 13 L40 31 C46 28.5 54 28.5 60 31 L78 13 C86 34 88 53 83 69 C78.5 82 69 89.5 57 91';
+---
+<svg class={`prenda ${clase}`} viewBox="0 0 400 500" aria-hidden="true">
+  <g stroke={costura} stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    {tipo === 'camiseta' && (
+      <>
+        <path fill={color} d="M140 72 Q200 100 260 72 L338 100 L392 192 L330 218 L314 192 L314 452 Q200 464 86 452 L86 192 L70 218 L8 192 L62 100 Z" />
+        <path fill="none" d={frente ? 'M140 72 Q200 116 260 72' : 'M140 72 Q200 90 260 72'} stroke-width="6" />
+        <path fill="none" d="M104 100 L86 192 M296 100 L314 192 M88 438 Q200 450 312 438" stroke-dasharray="5 5" />
+        {frente && <path d={felinoMini} transform="translate(236 140) scale(.26)" fill="none" stroke={marca} stroke-width="7" />}
+        {!frente && <rect x="186" y="86" width="28" height="16" rx="2" fill="#0B0B0C" stroke="none" />}
+        {!frente && estampado && (
+          <g transform="translate(110 170)" stroke="none">
+            <path d="M18 62 Q52 26 86 62 Q52 86 18 62 Z" fill="#E8A23A" />
+            <path d="M94 62 Q128 26 162 62 Q128 86 94 62 Z" fill="#E8A23A" />
+            <rect x="48" y="40" width="8" height="44" rx="4" fill="#0F0F10" />
+            <rect x="124" y="40" width="8" height="44" rx="4" fill="#0F0F10" />
+            <text x="90" y="140" text-anchor="middle" fill="#E8A23A" font-family="Anton, Impact, sans-serif" font-size="22" letter-spacing="3">NOS VEMOS EN LA OSCURIDAD</text>
+          </g>
+        )}
+      </>
+    )}
+    {tipo === 'buzo' && (
+      <>
+        {capota && !frente && <path fill={color} d="M128 92 Q126 26 200 22 Q274 26 272 92 Q200 150 128 92 Z" />}
+        <path fill={color} d="M126 88 L64 110 L22 300 L16 444 L62 450 L78 304 L88 226 L88 452 Q200 464 312 452 L312 226 L322 304 L338 450 L384 444 L378 300 L336 110 L274 88 Q200 118 126 88 Z" />
+        {capota && frente && (
+          <>
+            <path fill={color} d="M128 94 Q122 18 200 12 Q278 18 272 94 Q244 132 200 134 Q156 132 128 94 Z" />
+            <path fill="rgba(0,0,0,.35)" d="M150 96 Q200 36 250 96 Q228 124 200 126 Q172 124 150 96 Z" stroke="none" />
+          </>
+        )}
+        {!capota && <path fill="none" d={frente ? 'M128 88 Q200 132 272 88' : 'M128 88 Q200 104 272 88'} stroke-width="8" />}
+        {frente && capota && <path fill="none" d="M132 328 L268 328 L288 410 L112 410 Z" />}
+        <path fill="none" d="M88 430 Q200 442 312 430 M18 418 L64 424 M382 418 L336 424" stroke-width="3" />
+        {(frente !== capota) && <path d={felinoMini} transform={frente ? 'translate(236 160) scale(.26)' : 'translate(187 150) scale(.26)'} fill="none" stroke={marca} stroke-width="7" />}
+      </>
+    )}
+    {tipo === 'jogger' && (
+      <>
+        <path fill={color} d="M118 70 L282 70 L302 402 L296 452 L222 452 L214 402 L200 166 L186 402 L178 452 L104 452 L98 402 Z" />
+        <rect x="118" y="40" width="164" height="32" rx="4" fill={color} />
+        <path fill="none" d="M104 424 L180 424 M220 424 L296 424" stroke-width="3" />
+        <path fill="none" d="M108 220 L150 220 L150 290 L112 290 M292 220 L250 220 L250 290 L288 290" />
+        <path fill="none" d="M108 220 L150 220 L148 238 L110 238 M292 220 L250 220 L252 238 L290 238" />
+        {frente && <path fill="none" d="M194 72 Q186 104 176 118 M206 72 Q214 104 224 118" stroke={marca} stroke-width="2.5" />}
+        {!frente && <rect x="236" y="96" width="34" height="38" rx="3" fill="none" />}
+      </>
+    )}
+    {tipo === 'jean' && (
+      <>
+        <path fill={color} d="M120 58 L280 58 L296 472 L216 472 L200 176 L184 472 L104 472 Z" />
+        <path fill="none" d="M120 84 L280 84 M140 58 L140 84 M200 58 L200 84 M260 58 L260 84" />
+        {frente ? (
+          <>
+            <path fill="none" d="M200 84 L200 170 M200 84 Q214 130 202 160" />
+            <path fill="none" d="M124 92 Q156 98 166 132 M276 92 Q244 98 234 132" />
+            <circle cx="200" cy="72" r="5" fill="#C9C2B4" stroke="none" />
+          </>
+        ) : (
+          <>
+            <path fill="none" d="M134 124 L184 120 L186 182 L160 196 L136 184 Z M266 124 L216 120 L214 182 L240 196 L264 184 Z" />
+            <rect x="238" y="62" width="30" height="18" rx="2" fill="#6B4A2E" stroke="none" />
+          </>
+        )}
+        <path fill="none" d="M106 456 L184 456 M216 456 L294 456" stroke-dasharray="5 5" />
+      </>
+    )}
+    {tipo === 'boxer' && (
+      <>
+        <path fill={color} d="M106 186 L294 186 L306 346 L216 356 L200 292 L184 356 L94 346 Z" />
+        <rect x="106" y="146" width="188" height="42" rx="4" fill="#ECECEC" />
+        <text x="200" y="175" text-anchor="middle" fill="#111" stroke="none" font-family="Anton, Impact, sans-serif" font-size="20" letter-spacing="8">MONOIR</text>
+        {frente && <path fill="none" d="M200 188 Q178 236 196 290 M200 188 Q222 236 204 290" />}
+      </>
+    )}
+    {tipo === 'medias' && (
+      <>
+        {[{ x: -40, c: '#F1F1EF' }, { x: 50, c: '#141415' }].map(({ x, c }) => (
+          <g transform={`translate(${x} 0)`}>
+            <path fill={c} d="M150 56 L232 56 L232 330 Q234 384 282 402 Q334 424 322 458 Q310 484 258 472 L176 446 Q142 430 150 380 Z" />
+            <path fill="none" d="M150 70 L232 70 M150 84 L232 84 M150 98 L232 98" stroke={c === '#141415' ? 'rgba(255,255,255,.18)' : 'rgba(0,0,0,.14)'} />
+            {frente && <path d={felinoMini} transform="translate(170 140) scale(.4)" fill="none" stroke={c === '#141415' ? '#F1F1EF' : '#141415'} stroke-width="6" />}
+          </g>
+        ))}
+      </>
+    )}
+  </g>
+</svg>

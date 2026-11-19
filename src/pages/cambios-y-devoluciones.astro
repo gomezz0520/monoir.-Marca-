@@ -1,0 +1,44 @@
+---
+import Base from '../layouts/Base.astro';
+import { tienda, formatoCOP } from '../data/config';
+---
+<Base titulo="Cambios, devoluciones y envíos">
+  <section class="contenedor pagina">
+    <p class="etiqueta">Ayuda</p>
+    <h1 class="titulo titulo-l">Cambios, devoluciones y envíos</h1>
+    <div class="prosa">
+      <p>Sin letra menuda. Si algo no te quedó, lo arreglamos.</p>
+
+      <h2>Cambio de talla o color</h2>
+      <ul>
+        <li>Tenés <strong>15 días calendario</strong> desde que recibís tu pedido.</li>
+        <li>La prenda tiene que estar <strong>sin usar, sin lavar y con su etiqueta</strong>.</li>
+        <li>En Medellín y el Valle de Aburrá, <strong>el envío del cambio lo pagamos nosotros</strong>.</li>
+        <li>Para pedirlo, escribinos por WhatsApp con tu nombre y el producto.</li>
+      </ul>
+
+      <h2>Derecho de retracto</h2>
+      <p>Como compraste por internet, la ley colombiana (Ley 1480 de 2011, Estatuto del Consumidor) te da <strong>5 días hábiles</strong> desde la entrega para arrepentirte y devolver el producto. Te devolvemos el dinero dentro de los 30 días calendario siguientes. La prenda debe volver en el mismo estado en que la recibiste.</p>
+
+      <h2>Devolución de dinero</h2>
+      <p>Devolvemos el dinero en dos casos: si ejercés el <strong>derecho de retracto</strong>, o si la prenda llegó con un <strong>defecto de fábrica</strong>. En cualquier otro caso hacemos cambio por otra talla, color o prenda.</p>
+
+      <h2>Lo que no tiene cambio</h2>
+      <p><strong>Boxers y medias</strong>, por higiene, salvo que lleguen con defecto de fábrica.</p>
+
+      <h2 id="envios">Envíos</h2>
+      <ul>
+        <li><strong>Medellín y el Valle de Aburrá:</strong> si pedís antes de las 2 p. m., te llega el mismo día. Después de esa hora, al día siguiente.</li>
+        <li><strong>Envío gratis</strong> desde {formatoCOP(tienda.envioGratisDesde)}. Por debajo de ese valor, el envío cuesta {formatoCOP(tienda.envioMedellin)}.</li>
+        <li><strong>Resto de Colombia:</strong> muy pronto. Mientras tanto, escribinos y lo cotizamos.</li>
+      </ul>
+
+      <h2>Formas de pago</h2>
+      <p>Contraentrega o Nequi/transferencia. Pago con tarjeta y PSE, muy pronto.</p>
+    </div>
+  </section>
+</Base>
+<style>
+  .pagina { padding-block: clamp(2.5rem, 6vw, 4.5rem) 5rem; }
+  .pagina .titulo { margin: .5rem 0 1.5rem; }
+</style>

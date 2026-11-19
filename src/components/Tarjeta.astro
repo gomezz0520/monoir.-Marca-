@@ -1,0 +1,71 @@
+---
+import Prenda from './Prenda.astro';
+import { formatoCOP } from '../data/config';
+import type { Producto } from '../data/productos';
+interface Props { p: Producto; oscura?: boolean }
+const { p, oscura = false } = Astro.props;
+const capota = p.slug.includes('capota');
+---
+<article class={`tarjeta ${oscura ? 'oscura' : ''}`}
+  data-categoria={p.categoria} data-genero={p.genero} data-linea={p.linea}
+  data-tallas={p.tallas.join('|')} data-color={p.color.nombre} data-precio={p.precio}>
+  <a href={`/producto/${p.slug}`} class="enlace">
+    <div class="imagen">
+      {p.fotos ? (
+        <>
+          <img src={p.fotos.frente} alt={`${p.nombre}, frente`} loading="lazy" decoding="async" class="cara frente" />
+          <img src={p.fotos.espalda} alt={`${p.nombre}, espalda`} loading="lazy" decoding="async" class="cara espalda" />
+        </>
+      ) : (
+        <>
+          <Prenda tipo={p.tipo} color={p.color.hex} lado="frente" capota={capota} estampado={p.estampadoEspalda} class="cara frente" />
+          <Prenda tipo={p.tipo} color={p.color.hex} lado="espalda" capota={capota} estampado={p.estampadoEspalda} class="cara espalda" />
+        </>
+      )}
+      <div class="sellos">
+        {p.proximamente && <span class="chip chip-ambar">Próximo drop</span>}
+        {!p.proximamente && p.nuevo && <span class="chip">New in</span>}
+        {p.edicion && <span class="chip">{p.edicion} unidades</span>}
+      </div>
+    </div>
+    <div class="info">
+      <h3>{p.nombre}</h3>
+      <p class="precio">{formatoCOP(p.precio)}</p>
+    </div>
+    <p class="color">{p.color.nombre} · {p.genero === 'unisex' ? 'Unisex' : p.genero === 'hombre' ? 'Hombre' : 'Mujer'}</p>
+  </a>
+  <button class="voltear" type="button" aria-label={`Ver espalda de ${p.nombre}`} data-voltear>
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M3 12a9 9 0 0 1 15.5-6.3L21 8M21 3v5h-5M21 12a9 9 0 0 1-15.5 6.3L3 16M3 21v-5h5"/></svg>
+  </button>
+</article>
+
+<style>
+  .tarjeta { position: relative; }
+  .enlace { display: block; text-decoration: none; }
+  .imagen { position: relative; aspect-ratio: 4 / 5; background: var(--tarjeta); overflow: hidden; }
+  .oscura .imagen { background: radial-gradient(75% 65% at 50% 45%, #3a3a3f, #1c1c1f); }
+  .imagen :global(.cara) { position: absolute; inset: 8%; width: 84%; height: 84%; object-fit: contain; transition: opacity .35s ease, transform .5s ease; }
+  .imagen :global(.espalda) { opacity: 0; }
+  @media (hover: hover) {
+    .enlace:hover .imagen :global(.frente) { opacity: 0; }
+    .enlace:hover .imagen :global(.espalda) { opacity: 1; transform: scale(1.03); }
+  }
+  .tarjeta.volteada .imagen :global(.frente) { opacity: 0; }
+  .tarjeta.volteada .imagen :global(.espalda) { opacity: 1; }
+  .sellos { position: absolute; top: 12px; left: 12px; display: flex; gap: 6px; flex-wrap: wrap; }
+  .info { display: flex; justify-content: space-between; gap: 1rem; margin-top: .9rem; align-items: baseline; }
+  h3 { font-size: .95rem; font-weight: 600; margin: 0; }
+  .info .precio { margin: 0; font-size: .95rem; white-space: nowrap; }
+  .color { margin: .2rem 0 0; font-size: .8rem; color: var(--tinta-suave); }
+  .voltear {
+    position: absolute; right: 10px; top: 10px; width: 40px; height: 40px; border-radius: 50%;
+    border: 1px solid var(--linea); background: var(--fondo); display: grid; place-items: center; cursor: pointer;
+  }
+  @media (hover: hover) { .voltear { display: none; } }
+</style>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('[data-voltear]').forEach((b) => {
+    b.addEventListener('click', () => b.closest('.tarjeta')?.classList.toggle('volteada'));
+  });
+</script>

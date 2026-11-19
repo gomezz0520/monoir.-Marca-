@@ -1,0 +1,43 @@
+---
+import Base from '../layouts/Base.astro';
+import Felino from '../components/Felino.astro';
+import Wordmark from '../components/Wordmark.astro';
+---
+<Base titulo="El Mono" tema="oscuro" descripcion="La historia de MONOIR: primero fue El Mono.">
+  <section class="contenedor historia grano">
+    <p class="etiqueta">La historia</p>
+    <h1 class="titulo titulo-xl">Primero fue<br />El Mono.</h1>
+    <div class="cuerpo">
+      <div class="prosa">
+        <p><strong>A los 15 años</strong>, en Medellín, un pelado de piel blanca y pelo mono empezó a vender ropa. No tenía local, ni fotos bonitas, ni plan de negocios. Tenía un apodo: <strong>El Mono</strong>. Y con ese apodo bautizó la marca.</p>
+        <p>La cosa se pausó. La vida, la U, el camello. Pero la idea no se apagó. Se quedó ahí, esperando la noche correcta.</p>
+        <h2>Mono + Noir</h2>
+        <p><strong>Mono</strong> por él. <strong>Noir</strong>, negro en francés, por la noche de esta ciudad. Blanco y negro. El que se ve y el que se esconde. Eso es <strong>MONOIR</strong>.</p>
+        <h2>Los ojos</h2>
+        <p>¿Viste las dos O del nombre? Son los ojos de un felino. Porque en la oscuridad todo se apaga menos eso: los ojos que te miran cuando entrás al parche. Esa es la idea, mi niño, mi niña: que te miren.</p>
+        <h2>Lo que viene</h2>
+        <p>Empezamos con básicos que aguantan todo, a un precio que cualquiera en Medellín puede pagar. Después vienen los drops: piezas de colección, pocas unidades, sin repetir. Si te lo perdiste, te lo perdiste.</p>
+        <p class="firma">Pa' los que brillan de noche.</p>
+      </div>
+      <div class="marca" aria-hidden="true">
+        <Felino size="100%" />
+        <Wordmark ojos class="marca-texto" />
+      </div>
+    </div>
+    <div class="acciones">
+      <a href="/catalogo" class="boton boton-ambar">Ver el catálogo</a>
+      <a href="/#drop" class="boton boton-linea">Próximo drop</a>
+    </div>
+  </section>
+</Base>
+<style>
+  .historia { padding-block: clamp(3rem, 8vw, 6rem); }
+  .historia > .titulo { margin: .8rem 0 3rem; }
+  .cuerpo { display: grid; grid-template-columns: 1.4fr 1fr; gap: clamp(2rem, 6vw, 6rem); align-items: start; }
+  .prosa p { font-size: 1.08rem; }
+  .firma { font-family: var(--f-marca); font-style: italic; font-size: 1.6rem !important; color: var(--ambar) !important; margin-top: 2rem; }
+  .marca { position: sticky; top: 100px; max-width: 360px; justify-self: center; width: 100%; text-align: center; }
+  :global(.marca-texto) { display: block; font-size: clamp(2rem, 5vw, 3.2rem); margin-top: 1.5rem; }
+  .acciones { display: flex; gap: 1rem; flex-wrap: wrap; margin-top: 3rem; }
+  @media (max-width: 760px) { .cuerpo { grid-template-columns: 1fr; } .marca { position: static; max-width: 200px; order: -1; } }
+</style>

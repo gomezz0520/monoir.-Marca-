@@ -1,0 +1,85 @@
+---
+import Felino from './Felino.astro';
+import Wordmark from './Wordmark.astro';
+import { tienda, formatoCOP } from '../data/config';
+const actual = Astro.url.pathname;
+const links = [
+  { href: '/catalogo', texto: 'Catálogo' },
+  { href: '/#drop', texto: 'Próximo drop' },
+  { href: '/el-mono', texto: 'El Mono' },
+];
+---
+<div class="aviso" role="note">
+  <p>Pedí antes de las 2 p. m. y te llega <strong>hoy</strong> en Medellín · Envío gratis desde {formatoCOP(tienda.envioGratisDesde)}</p>
+</div>
+<header class="encabezado">
+  <div class="contenedor fila">
+    <nav class="nav-escritorio" aria-label="Principal">
+      {links.map((l) => <a href={l.href} aria-current={actual.startsWith(l.href) && l.href !== '/#drop' ? 'page' : undefined}>{l.texto}</a>)}
+    </nav>
+    <details class="nav-movil">
+      <summary aria-label="Abrir menú"><span></span><span></span></summary>
+      <nav aria-label="Menú">
+        {links.map((l) => <a href={l.href}>{l.texto}</a>)}
+        <a href="/cambios-y-devoluciones">Cambios y devoluciones</a>
+      </nav>
+    </details>
+    <a href="/" class="logo" aria-label="MONOIR, ir al inicio">
+      <Felino size={30} />
+      <Wordmark class="logo-texto" />
+    </a>
+    <a href="/carrito" class="bolsa" aria-label="Ver carrito">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M5 8h14l-1 13H6L5 8Z"/><path d="M9 8V6a3 3 0 0 1 6 0v2"/></svg>
+      <span class="bolsa-texto">Carrito</span>
+      <span class="contador" data-contador hidden>0</span>
+    </a>
+  </div>
+</header>
+
+<style>
+  .aviso { background: var(--ambar); color: var(--noche); text-align: center; font-size: .78rem; font-weight: 500; padding: .55em var(--gutter); }
+  .aviso p { margin: 0; }
+  .encabezado {
+    position: sticky; top: 0; z-index: 50;
+    background: color-mix(in srgb, var(--fondo) 88%, transparent);
+    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--linea);
+  }
+  .fila { display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; height: 64px; }
+  .nav-escritorio { display: flex; gap: 1.8rem; }
+  .nav-escritorio a, .nav-movil nav a {
+    font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; text-decoration: none;
+  }
+  .nav-escritorio a:hover, .nav-escritorio a[aria-current] { color: var(--ambar); }
+  .logo { display: flex; align-items: center; gap: .6rem; text-decoration: none; }
+  :global(.logo-texto) { font-size: 1.35rem; }
+  .bolsa { justify-self: end; display: flex; align-items: center; gap: .45rem; text-decoration: none; font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; position: relative; padding: .5rem 0 .5rem .5rem; }
+  .contador { min-width: 20px; height: 20px; padding: 0 5px; border-radius: 99px; background: var(--ambar); color: var(--noche); font-size: .7rem; letter-spacing: 0; display: inline-grid; place-items: center; }
+  .contador[hidden] { display: none; }
+  .nav-movil { display: none; }
+  @media (max-width: 760px) {
+    .nav-escritorio, .bolsa-texto { display: none; }
+    .nav-movil { display: block; }
+    .nav-movil summary { list-style: none; cursor: pointer; width: 44px; height: 44px; display: grid; align-content: center; gap: 6px; }
+    .nav-movil summary::-webkit-details-marker { display: none; }
+    .nav-movil summary span { display: block; width: 22px; height: 1.5px; background: currentColor; transition: transform .2s; }
+    .nav-movil[open] summary span:first-child { transform: translateY(3.75px) rotate(45deg); }
+    .nav-movil[open] summary span:last-child { transform: translateY(-3.75px) rotate(-45deg); }
+    .nav-movil nav { position: absolute; left: 0; right: 0; top: 64px; background: var(--fondo); border-bottom: 1px solid var(--linea); display: grid; padding: .5rem var(--gutter) 1.2rem; }
+    .nav-movil nav a { padding: .9rem 0; border-bottom: 1px solid var(--linea); }
+    :global(.logo-texto) { font-size: 1.15rem; }
+  }
+</style>
+
+<script>
+  import { contar, leer } from '../scripts/carrito';
+  const pintar = () => {
+    const n = contar(leer());
+    document.querySelectorAll<HTMLElement>('[data-contador]').forEach((el) => {
+      el.textContent = String(n); el.hidden = n === 0;
+    });
+  };
+  pintar();
+  window.addEventListener('carrito:cambio', pintar);
+  window.addEventListener('storage', pintar);
+</script>

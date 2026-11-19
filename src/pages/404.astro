@@ -1,0 +1,16 @@
+---
+import Base from '../layouts/Base.astro';
+import Felino from '../components/Felino.astro';
+---
+<Base titulo="Página no encontrada" tema="oscuro">
+  <section class="contenedor nada">
+    <Felino size={120} />
+    <h1 class="titulo titulo-l">Te perdiste en la oscuridad.</h1>
+    <p>Esta página no existe, mi niño. Pero el catálogo sí.</p>
+    <a href="/catalogo" class="boton boton-ambar">Ir al catálogo</a>
+  </section>
+</Base>
+<style>
+  .nada { min-height: 60vh; display: grid; place-items: center; align-content: center; gap: 1.2rem; text-align: center; padding-block: 4rem; }
+  .nada p { color: var(--tinta-suave); margin: 0; }
+</style>

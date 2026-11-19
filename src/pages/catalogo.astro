@@ -1,0 +1,134 @@
+---
+import Base from '../layouts/Base.astro';
+import Tarjeta from '../components/Tarjeta.astro';
+import { productos, categorias } from '../data/productos';
+
+const tallas = [...new Set(productos.flatMap((p) => p.tallas))].filter((t) => !t.startsWith('Única'));
+const orden = ['XS', 'S', 'M', 'L', 'XL', 'XXL'];
+tallas.sort((a, b) => {
+  const ia = orden.indexOf(a), ib = orden.indexOf(b);
+  if (ia > -1 && ib > -1) return ia - ib;
+  if (ia > -1) return -1; if (ib > -1) return 1;
+  return Number(a) - Number(b);
+});
+---
+<Base titulo="Catálogo" descripcion="Camisetas, buzos, joggers, jeans e interior MONOIR. Entrega el mismo día en Medellín.">
+  <section class="contenedor cabeza">
+    <p class="etiqueta">Catálogo</p>
+    <h1 class="titulo titulo-xl">Todo MONOIR</h1>
+    <p class="sub">Básicos que aguantan el parche y piezas de colección que no vuelven.</p>
+  </section>
+
+  <div class="filtros-barra">
+    <form class="contenedor filtros" data-filtros aria-label="Filtrar productos">
+      <fieldset class="chips" aria-label="Tipo de prenda">
+        <legend class="sr-only">Tipo de prenda</legend>
+        <label><input type="radio" name="categoria" value="" checked /><span>Todo</span></label>
+        {categorias.map((c) => <label><input type="radio" name="categoria" value={c} /><span>{c}</span></label>)}
+      </fieldset>
+      <div class="selects">
+        <label>
+          <span class="sr-only">Para</span>
+          <select name="genero">
+            <option value="">Hombre y mujer</option>
+            <option value="hombre">Hombre</option>
+            <option value="mujer">Mujer</option>
+            <option value="unisex">Unisex</option>
+          </select>
+        </label>
+        <label>
+          <span class="sr-only">Talla</span>
+          <select name="talla">
+            <option value="">Todas las tallas</option>
+            {tallas.map((t) => <option value={t}>Talla {t}</option>)}
+          </select>
+        </label>
+        <label>
+          <span class="sr-only">Línea</span>
+          <select name="linea">
+            <option value="">Básicos y colección</option>
+            <option value="Básicos">Básicos</option>
+            <option value="Colección">Colección</option>
+          </select>
+        </label>
+      </div>
+    </form>
+  </div>
+
+  <section class="contenedor resultados">
+    <p class="conteo" aria-live="polite"><span data-conteo>{productos.length}</span> prendas</p>
+    <div class="rejilla" data-rejilla>
+      {productos.map((p) => <Tarjeta p={p} />)}
+    </div>
+    <div class="vacio" data-vacio hidden>
+      <p class="titulo titulo-m">Nada por acá, mi niño.</p>
+      <p>Probá con otra talla o quitá un filtro. O escribinos y te ayudamos a encontrarlo.</p>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .cabeza { padding-block: clamp(2.5rem, 6vw, 4.5rem) 2rem; }
+  .cabeza .titulo { margin: .5rem 0 .8rem; }
+  .sub { color: var(--tinta-suave); margin: 0; max-width: 50ch; }
+  .filtros-barra { position: sticky; top: 64px; z-index: 20; background: var(--fondo); border-block: 1px solid var(--linea); }
+  .filtros { display: flex; justify-content: space-between; align-items: center; gap: 1rem; padding-block: .8rem; flex-wrap: wrap; }
+  .chips { display: flex; gap: .4rem; border: 0; padding: 0; margin: 0; overflow-x: auto; scrollbar-width: none; max-width: 100%; }
+  .chips::-webkit-scrollbar { display: none; }
+  .chips input { position: absolute; opacity: 0; pointer-events: none; }
+  .chips span {
+    display: inline-block; padding: .55rem 1rem; border: 1px solid var(--linea); border-radius: 99px; cursor: pointer;
+    font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap;
+  }
+  .chips input:checked + span { background: var(--noche); color: var(--blanco); border-color: var(--noche); }
+  .chips input:focus-visible + span { outline: 2px solid var(--ambar); outline-offset: 2px; }
+  .selects { display: flex; gap: .5rem; flex-wrap: wrap; }
+  select {
+    min-height: 40px; padding: 0 2rem 0 .8rem; border: 1px solid var(--linea); border-radius: var(--radio);
+    background: var(--fondo) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230b0b0c' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right .8rem center;
+    appearance: none; font-size: .85rem; cursor: pointer;
+  }
+  .resultados { padding-block: 1.5rem 5rem; }
+  .conteo { font-size: .8rem; color: var(--tinta-suave); margin: 0 0 1.2rem; }
+  .rejilla { display: grid; grid-template-columns: repeat(4, 1fr); gap: 2.2rem 1.4rem; }
+  @media (max-width: 960px) { .rejilla { grid-template-columns: repeat(2, 1fr); gap: 1.8rem .9rem; } }
+  @media (max-width: 760px) { .selects { width: 100%; } .selects label { flex: 1; } select { width: 100%; } }
+  .vacio { text-align: center; padding: 4rem 0; color: var(--tinta-suave); }
+  .vacio[hidden] { display: none; }
+</style>
+
+<script>
+  const form = document.querySelector<HTMLFormElement>('[data-filtros]')!;
+  const tarjetas = [...document.querySelectorAll<HTMLElement>('[data-rejilla] .tarjeta')];
+  const conteo = document.querySelector('[data-conteo]')!;
+  const vacio = document.querySelector<HTMLElement>('[data-vacio]')!;
+
+  // Filtros iniciales desde la URL (ej. /catalogo?linea=Colección)
+  const params = new URLSearchParams(location.search);
+  for (const [k, v] of params) {
+    const campo = form.elements.namedItem(k);
+    if (campo instanceof RadioNodeList) campo.value = v;
+    else if (campo instanceof HTMLSelectElement) campo.value = v;
+  }
+
+  const filtrar = () => {
+    const f = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    let n = 0;
+    for (const t of tarjetas) {
+      const d = t.dataset;
+      const ok =
+        (!f.categoria || d.categoria === f.categoria) &&
+        (!f.genero || d.genero === f.genero || (f.genero !== 'unisex' && d.genero === 'unisex')) &&
+        (!f.linea || d.linea === f.linea) &&
+        (!f.talla || d.tallas!.split('|').includes(f.talla));
+      t.hidden = !ok;
+      if (ok) n++;
+    }
+    conteo.textContent = String(n);
+    vacio.hidden = n > 0;
+    const q = new URLSearchParams(Object.entries(f).filter(([, v]) => v));
+    history.replaceState(null, '', q.size ? `?${q}` : location.pathname);
+  };
+  form.addEventListener('change', filtrar);
+  filtrar();
+</script>

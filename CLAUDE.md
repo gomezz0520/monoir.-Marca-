@@ -6,7 +6,9 @@ Tienda web de **MONOIR**, marca de streetwear de Medellín. El brief completo es
 - Habla siempre en **español sencillo**. El fundador no tiene experiencia en diseño ni en programación.
 - Cuando algo sea técnico, explícalo con ejemplos y **da una recomendación concreta**.
 - Antes de decisiones grandes (diseño, estructura, funciones nuevas), muestra opciones y espera su aprobación.
-- **Estado actual:** la entrevista terminó. Hay que **esperar a que elija una dirección visual** (BRIEF.md, sección 14) **antes de construir la página**.
+- **Estado actual:** el fundador eligió la **dirección A — "NOCHE"**. La versión 1 está construida con **Astro** (sitio estático). Las prendas se muestran con ilustraciones SVG (`src/components/Prenda.astro`) hasta que haya fotos reales; al agregar `fotos` en un producto, estas reemplazan la ilustración.
+- Datos editables: `src/data/productos.ts` (catálogo) y `src/data/config.ts` (WhatsApp, redes, envío, drop). Los valores marcados `PENDIENTE` son de ejemplo.
+- Paleta NOCHE: negro `#0b0b0c`, hueso `#f2efe9`, blanco `#fafaf7`, humo `#8a8a8e`, ámbar `#e8a23a` (sobre fondo claro, para texto usar `#8f5a0c`). Letras: Bodoni Moda (marca), Anton (títulos), Inter (texto).
 
 ## Reglas de marca (no negociables)
 - **Nunca mostrar productos ni logos de marcas de terceros** (Nike, Boss, CK, Rolex, etc.). La tienda vende **MONOIR marca blanca** y, más adelante, **MONOIR ORIGINAL** (básicos y drops propios).

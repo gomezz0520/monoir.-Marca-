@@ -1,0 +1,239 @@
+---
+import Base from '../../layouts/Base.astro';
+import Prenda from '../../components/Prenda.astro';
+import Tarjeta from '../../components/Tarjeta.astro';
+import { productos, type Producto } from '../../data/productos';
+import { tienda, formatoCOP } from '../../data/config';
+
+export function getStaticPaths() {
+  return productos.map((p) => ({ params: { slug: p.slug }, props: { p } }));
+}
+const { p } = Astro.props as { p: Producto };
+const capota = p.slug.includes('capota');
+const relacionados = productos.filter((x) => x.slug !== p.slug && x.categoria === p.categoria).slice(0, 4);
+const completar = relacionados.length < 4
+  ? productos.filter((x) => x.slug !== p.slug && !relacionados.includes(x)).slice(0, 4 - relacionados.length)
+  : [];
+const sinCambio = p.categoria === 'Interior';
+const generoTexto = p.genero === 'unisex' ? 'Unisex' : p.genero === 'hombre' ? 'Hombre' : 'Mujer';
+---
+<Base titulo={p.nombre} descripcion={`${p.nombre} · ${formatoCOP(p.precio)}. ${p.descripcion}`}>
+  <nav class="contenedor migas" aria-label="Ruta">
+    <a href="/catalogo">Catálogo</a> / <a href={`/catalogo?categoria=${p.categoria}`}>{p.categoria}</a> / <span>{p.nombre}</span>
+  </nav>
+
+  <section class="contenedor producto">
+    <div class="galeria" data-galeria>
+      <div class="vista">
+        {p.fotos ? (
+          <>
+            <img src={p.fotos.frente} alt={`${p.nombre}, frente`} class="cara activa" data-cara="frente" />
+            <img src={p.fotos.espalda} alt={`${p.nombre}, espalda`} class="cara" data-cara="espalda" loading="lazy" />
+          </>
+        ) : (
+          <>
+            <div class="cara activa" data-cara="frente"><Prenda tipo={p.tipo} color={p.color.hex} lado="frente" capota={capota} estampado={p.estampadoEspalda} /></div>
+            <div class="cara" data-cara="espalda"><Prenda tipo={p.tipo} color={p.color.hex} lado="espalda" capota={capota} estampado={p.estampadoEspalda} /></div>
+          </>
+        )}
+        {!p.fotos && <p class="nota-foto">Ilustración de referencia · Foto real muy pronto</p>}
+      </div>
+      <div class="lados" role="group" aria-label="Ver prenda">
+        <button type="button" class="activo" data-lado="frente" aria-pressed="true">Frente</button>
+        <button type="button" data-lado="espalda" aria-pressed="false">Espalda</button>
+      </div>
+    </div>
+
+    <div class="detalle">
+      <div class="sellos">
+        <span class="etiqueta">{p.linea} · {generoTexto}</span>
+        {p.edicion && <span class="chip chip-ambar">Edición de {p.edicion}</span>}
+      </div>
+      <h1 class="titulo titulo-l">{p.nombre}</h1>
+      <p class="precio grande">{formatoCOP(p.precio)}</p>
+      <p class="color-linea"><span class="muestra" style={`background:${p.color.hex}`}></span>{p.color.nombre}</p>
+
+      <form class="compra" data-compra
+        data-slug={p.slug} data-nombre={`${p.nombre} · ${p.color.nombre}`} data-precio={p.precio}>
+        <fieldset class="tallas">
+          <div class="tallas-cabeza">
+            <legend>Talla</legend>
+            <button type="button" class="link-guia" data-abrir-guia>Guía de tallas</button>
+          </div>
+          <div class="tallas-opciones">
+            {p.tallas.map((t) => (
+              <label><input type="radio" name="talla" value={t} required checked={p.tallas.length === 1} /><span>{t}</span></label>
+            ))}
+          </div>
+          <p class="aviso-talla" data-aviso-talla hidden>Escogé tu talla primero, mi niño.</p>
+        </fieldset>
+
+        {p.proximamente ? (
+          <a href="/#drop" class="boton boton-ambar boton-bloque">Sale en el próximo drop · Avisame</a>
+        ) : (
+          <button type="submit" class="boton boton-solido boton-bloque">Agregar al carrito</button>
+        )}
+      </form>
+
+      <ul class="beneficios">
+        <li><strong>Te llega hoy</strong> en Medellín y el Valle de Aburrá si pedís antes de las {tienda.horaCorte > 12 ? tienda.horaCorte - 12 : tienda.horaCorte} p. m.</li>
+        <li><strong>Envío gratis</strong> desde {formatoCOP(tienda.envioGratisDesde)}.</li>
+        <li>{sinCambio ? <><strong>Sin cambio</strong> por higiene (boxers y medias).</> : <><strong>Cambio de talla gratis</strong> durante 15 días.</>}</li>
+      </ul>
+
+      <p class="descripcion">{p.descripcion}</p>
+
+      <details open>
+        <summary>Detalles</summary>
+        <ul>{p.detalles.map((d) => <li>{d}</li>)}</ul>
+      </details>
+      <details>
+        <summary>Envíos y cambios</summary>
+        <p>Pedidos antes de las 2 p. m. llegan el mismo día en Medellín y el Valle de Aburrá. Tenés 5 días hábiles de retracto y 15 días para cambiar talla o color, con la prenda sin usar y con etiqueta. <a href="/cambios-y-devoluciones">Ver política completa</a>.</p>
+      </details>
+    </div>
+  </section>
+
+  <dialog class="guia" data-guia aria-labelledby="guia-titulo">
+    <div class="guia-cabeza">
+      <h2 id="guia-titulo" class="titulo titulo-m">Guía de tallas</h2>
+      <button type="button" data-cerrar-guia aria-label="Cerrar">✕</button>
+    </div>
+    <p class="guia-sub">{p.nombre}. Medidas de la prenda en centímetros, tomada plana.</p>
+    <div class="tabla-envoltura">
+      <table>
+        <thead><tr><th>Talla</th>{p.columnasMedidas.map((c) => <th>{c}</th>)}</tr></thead>
+        <tbody>
+          {Object.entries(p.medidas).map(([t, ms]) => <tr><th>{t}</th>{ms.map((m) => <td>{m}</td>)}</tr>)}
+        </tbody>
+      </table>
+    </div>
+    <p class="guia-tip"><strong>Truco:</strong> medí una prenda tuya que te quede bien y compará. ¿Dudás entre dos tallas? Escribinos por WhatsApp y te decimos.</p>
+  </dialog>
+
+  <section class="contenedor relacionados">
+    <h2 class="titulo titulo-m">Combinalo con</h2>
+    <div class="rejilla">
+      {[...relacionados, ...completar].map((x) => <Tarjeta p={x} />)}
+    </div>
+  </section>
+</Base>
+
+<style>
+  .migas { padding-block: 1.4rem; font-size: .78rem; color: var(--tinta-suave); }
+  .migas a { text-decoration: none; }
+  .migas a:hover { color: var(--tinta); }
+  .producto { display: grid; grid-template-columns: 1.15fr 1fr; gap: clamp(1.5rem, 5vw, 5rem); align-items: start; padding-bottom: 5rem; }
+  .galeria { position: sticky; top: 84px; }
+  .vista { position: relative; aspect-ratio: 4 / 5; background: var(--tarjeta); overflow: hidden; }
+  .cara { position: absolute; inset: 7%; opacity: 0; transition: opacity .35s ease; }
+  .cara.activa { opacity: 1; }
+  .cara :global(svg), img.cara { width: 100%; height: 100%; object-fit: contain; }
+  .nota-foto { position: absolute; top: 10px; left: 0; right: 0; text-align: center; margin: 0; font-size: .7rem; color: var(--tinta-suave); letter-spacing: .06em; }
+  .lados { display: grid; grid-template-columns: 1fr 1fr; gap: .5rem; margin-top: .6rem; }
+  .lados button { min-height: 44px; border: 1px solid var(--linea); background: transparent; cursor: pointer; font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; }
+  .lados button.activo { border-color: var(--noche); background: var(--noche); color: var(--blanco); }
+
+  .sellos { display: flex; align-items: center; gap: .8rem; flex-wrap: wrap; }
+  .detalle .titulo { margin: .6rem 0 .8rem; }
+  .precio.grande { font-size: 1.4rem; margin: 0; }
+  .color-linea { display: flex; align-items: center; gap: .5rem; color: var(--tinta-suave); font-size: .9rem; margin: .8rem 0 1.8rem; }
+  .muestra { width: 16px; height: 16px; border-radius: 50%; border: 1px solid var(--linea); }
+
+  .tallas { border: 0; padding: 0; margin: 0 0 1.2rem; }
+  .tallas-cabeza { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .7rem; }
+  legend { float: left; font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; padding: 0; }
+  .link-guia { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-size: .85rem; cursor: pointer; }
+  .tallas-opciones { display: flex; flex-wrap: wrap; gap: .5rem; clear: both; }
+  .tallas-opciones input { position: absolute; opacity: 0; pointer-events: none; }
+  .tallas-opciones span {
+    display: grid; place-items: center; min-width: 56px; min-height: 48px; padding: 0 .9rem;
+    border: 1px solid var(--linea); cursor: pointer; font-weight: 600; font-size: .9rem; transition: border-color .15s;
+  }
+  .tallas-opciones span:hover { border-color: var(--noche); }
+  .tallas-opciones input:checked + span { background: var(--noche); color: var(--blanco); border-color: var(--noche); }
+  .tallas-opciones input:focus-visible + span { outline: 2px solid var(--ambar); outline-offset: 2px; }
+  .aviso-talla { color: var(--ambar-texto); font-size: .85rem; font-weight: 600; margin: .6rem 0 0; }
+  .aviso-talla[hidden] { display: none; }
+
+  .beneficios { list-style: none; padding: 1.2rem 0; margin: 1.6rem 0; border-block: 1px solid var(--linea); display: grid; gap: .6rem; font-size: .88rem; color: var(--tinta-suave); }
+  .beneficios li { padding-left: 1.4rem; position: relative; }
+  .beneficios li::before { content: ''; position: absolute; left: 0; top: .55em; width: 7px; height: 7px; border-radius: 50%; background: var(--ambar); }
+  .beneficios strong { color: var(--tinta); }
+  .descripcion { font-size: 1.02rem; }
+  details { border-bottom: 1px solid var(--linea); padding: 1rem 0; }
+  summary { cursor: pointer; font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; list-style: none; display: flex; justify-content: space-between; }
+  summary::after { content: '+'; font-size: 1.1rem; }
+  details[open] summary::after { content: '–'; }
+  details ul, details p { color: var(--tinta-suave); font-size: .92rem; margin: .8rem 0 0; }
+
+  .guia { border: 0; padding: 1.6rem; width: min(560px, calc(100vw - 32px)); background: var(--blanco); color: var(--noche); }
+  .guia::backdrop { background: rgba(11,11,12,.6); backdrop-filter: blur(3px); }
+  .guia-cabeza { display: flex; justify-content: space-between; align-items: center; }
+  .guia-cabeza button { width: 44px; height: 44px; border: 0; background: none; font-size: 1.2rem; cursor: pointer; }
+  .guia-sub, .guia-tip { color: var(--tinta-suave); font-size: .88rem; }
+  .tabla-envoltura { overflow-x: auto; }
+  table { width: 100%; border-collapse: collapse; font-size: .92rem; font-variant-numeric: tabular-nums; }
+  th, td { padding: .7rem .6rem; text-align: center; border-bottom: 1px solid var(--linea); }
+  thead th { font-size: .7rem; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-suave); font-weight: 600; }
+  tbody th { font-weight: 700; }
+
+  .relacionados { padding-bottom: 5rem; }
+  .relacionados .titulo { margin-bottom: 1.6rem; }
+  .rejilla { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.4rem; }
+  @media (max-width: 960px) { .rejilla { grid-template-columns: repeat(2, 1fr); gap: 1.8rem .9rem; } }
+  @media (max-width: 760px) {
+    .producto { grid-template-columns: 1fr; }
+    .galeria { position: static; }
+  }
+</style>
+
+<script>
+  import { agregar } from '../../scripts/carrito';
+
+  // Frente / espalda
+  const galeria = document.querySelector('[data-galeria]')!;
+  galeria.querySelectorAll<HTMLButtonElement>('[data-lado]').forEach((b) => {
+    b.addEventListener('click', () => {
+      galeria.querySelectorAll<HTMLButtonElement>('[data-lado]').forEach((x) => {
+        const on = x === b; x.classList.toggle('activo', on); x.setAttribute('aria-pressed', String(on));
+      });
+      galeria.querySelectorAll<HTMLElement>('[data-cara]').forEach((c) => c.classList.toggle('activa', c.dataset.cara === b.dataset.lado));
+    });
+  });
+  // Deslizar con el dedo para voltear
+  let x0: number | null = null;
+  const vista = galeria.querySelector<HTMLElement>('.vista')!;
+  vista.addEventListener('touchstart', (e) => (x0 = e.touches[0].clientX), { passive: true });
+  vista.addEventListener('touchend', (e) => {
+    if (x0 === null) return;
+    const dx = e.changedTouches[0].clientX - x0; x0 = null;
+    if (Math.abs(dx) < 40) return;
+    const actual = galeria.querySelector<HTMLElement>('.cara.activa')?.dataset.cara;
+    galeria.querySelector<HTMLButtonElement>(`[data-lado="${actual === 'frente' ? 'espalda' : 'frente'}"]`)?.click();
+  });
+
+  // Guía de tallas
+  const guia = document.querySelector<HTMLDialogElement>('[data-guia]')!;
+  document.querySelector('[data-abrir-guia]')?.addEventListener('click', () => guia.showModal());
+  document.querySelector('[data-cerrar-guia]')?.addEventListener('click', () => guia.close());
+  guia.addEventListener('click', (e) => { if (e.target === guia) guia.close(); });
+
+  // Agregar al carrito
+  const form = document.querySelector<HTMLFormElement>('[data-compra]')!;
+  const aviso = document.querySelector<HTMLElement>('[data-aviso-talla]')!;
+  form.addEventListener('change', () => (aviso.hidden = true));
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const talla = new FormData(form).get('talla') as string | null;
+    if (!talla) { aviso.hidden = false; return; }
+    const d = form.dataset;
+    agregar({ slug: d.slug!, nombre: d.nombre!, talla, precio: Number(d.precio) });
+    const toast = document.querySelector<HTMLElement>('[data-toast]')!;
+    toast.innerHTML = `Listo, quedó en tu carrito. <a href="/carrito">Ver carrito</a>`;
+    toast.classList.add('visible');
+    clearTimeout((window as any).__toast);
+    (window as any).__toast = setTimeout(() => toast.classList.remove('visible'), 3500);
+  });
+  form.addEventListener('invalid', (e) => { e.preventDefault(); aviso.hidden = false; }, true);
+</script>

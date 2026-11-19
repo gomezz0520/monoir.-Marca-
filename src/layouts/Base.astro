@@ -1,0 +1,49 @@
+---
+import '@fontsource-variable/bodoni-moda/wght.css';
+import '@fontsource/anton/latin-400.css';
+import '@fontsource-variable/inter/wght.css';
+import '../styles/global.css';
+import Encabezado from '../components/Encabezado.astro';
+import Pie from '../components/Pie.astro';
+import WhatsAppFlotante from '../components/WhatsAppFlotante.astro';
+
+interface Props { titulo?: string; descripcion?: string; tema?: 'claro' | 'oscuro' }
+const {
+  titulo,
+  descripcion = 'MONOIR: streetwear de Medellín. Pa\' los que brillan de noche. Entrega el mismo día en Medellín.',
+  tema = 'claro',
+} = Astro.props;
+const tituloFinal = titulo ? `${titulo} · MONOIR` : 'MONOIR · Pa\' los que brillan de noche';
+---
+<!doctype html>
+<html lang="es-CO">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{tituloFinal}</title>
+    <meta name="description" content={descripcion} />
+    <meta name="theme-color" content={tema === 'oscuro' ? '#0b0b0c' : '#fafaf7'} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content={tituloFinal} />
+    <meta property="og:description" content={descripcion} />
+    <meta property="og:type" content="website" />
+  </head>
+  <body class={tema === 'oscuro' ? 'tema-oscuro' : ''}>
+    <a href="#contenido" class="sr-only">Saltar al contenido</a>
+    <Encabezado />
+    <main id="contenido"><slot /></main>
+    <Pie />
+    <WhatsAppFlotante />
+    <div class="toast" role="status" aria-live="polite" data-toast></div>
+    <style is:global>
+      .toast {
+        position: fixed; left: 50%; bottom: 24px; transform: translate(-50%, 20px); z-index: 70; opacity: 0; visibility: hidden;
+        background: var(--noche); color: var(--hueso); border-left: 3px solid var(--ambar);
+        padding: .9rem 1.2rem; font-size: .9rem; max-width: calc(100vw - 110px);
+        box-shadow: 0 10px 30px rgba(0,0,0,.3); transition: transform .3s ease, opacity .3s, visibility .3s;
+      }
+      .toast.visible { transform: translate(-50%, 0); opacity: 1; visibility: visible; }
+      .toast a { color: var(--ambar); font-weight: 600; margin-left: .6em; }
+    </style>
+  </body>
+</html>

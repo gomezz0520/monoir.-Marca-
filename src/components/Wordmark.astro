@@ -1,0 +1,10 @@
+---
+// MONOIR en serif elegante. Con `ojos`, las dos O se vuelven los ojos del felino.
+interface Props { ojos?: boolean; class?: string; as?: 'span' | 'h1' }
+const { ojos = false, class: clase = '', as: Tag = 'span' } = Astro.props;
+---
+<Tag class={`wordmark ${ojos ? 'con-ojos' : ''} ${clase}`} aria-label="MONOIR">
+  {ojos ? (
+    <span aria-hidden="true">M<span class="ojo">O</span>N<span class="ojo">O</span>IR</span>
+  ) : <span aria-hidden="true">MONOIR</span>}
+</Tag>

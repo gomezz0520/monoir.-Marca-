@@ -1,0 +1,53 @@
+---
+import Felino from './Felino.astro';
+import Wordmark from './Wordmark.astro';
+import { tienda } from '../data/config';
+const anio = new Date().getFullYear();
+---
+<footer class="pie tema-oscuro grano">
+  <div class="contenedor">
+    <div class="arriba">
+      <div class="marca">
+        <Felino size={56} />
+        <Wordmark class="pie-wordmark" ojos />
+        <p>Pa' los que brillan de noche.<br />Hecho en Medellín.</p>
+      </div>
+      <nav aria-label="Tienda">
+        <p class="etiqueta">Tienda</p>
+        <a href="/catalogo">Catálogo</a>
+        <a href="/catalogo?linea=Colección">Colección</a>
+        <a href="/#drop">Próximo drop</a>
+      </nav>
+      <nav aria-label="Ayuda">
+        <p class="etiqueta">Ayuda</p>
+        <a href="/cambios-y-devoluciones">Cambios y devoluciones</a>
+        <a href="/cambios-y-devoluciones#envios">Envíos</a>
+        <a href={`https://wa.me/${tienda.whatsapp}`} rel="noopener" target="_blank">WhatsApp</a>
+      </nav>
+      <nav aria-label="Marca">
+        <p class="etiqueta">Marca</p>
+        <a href="/el-mono">El Mono</a>
+        <a href={tienda.instagram} rel="noopener" target="_blank">Instagram</a>
+        <a href={tienda.tiktok} rel="noopener" target="_blank">TikTok</a>
+      </nav>
+    </div>
+    <div class="abajo">
+      <p>© {anio} MONOIR. Todos los derechos reservados.</p>
+      <a href="/datos-personales">Tratamiento de datos personales</a>
+    </div>
+  </div>
+</footer>
+
+<style>
+  .pie { background: var(--fondo); color: var(--tinta); padding: 4.5rem 0 2rem; }
+  .arriba { display: grid; grid-template-columns: 1.6fr repeat(3, 1fr); gap: 2.5rem; }
+  .marca p { color: var(--tinta-suave); margin: 1rem 0 0; font-size: .9rem; }
+  :global(.pie-wordmark) { display: block; font-size: 2rem; margin-top: 1rem; }
+  nav { display: grid; align-content: start; gap: .7rem; }
+  nav .etiqueta { margin: 0 0 .3rem; }
+  nav a { text-decoration: none; color: var(--tinta-suave); font-size: .92rem; }
+  nav a:hover { color: var(--ambar); }
+  .abajo { margin-top: 4rem; padding-top: 1.5rem; border-top: 1px solid var(--linea); display: flex; justify-content: space-between; gap: 1rem; flex-wrap: wrap; font-size: .8rem; color: var(--tinta-suave); }
+  .abajo p { margin: 0; }
+  @media (max-width: 760px) { .arriba { grid-template-columns: 1fr 1fr; } .marca { grid-column: 1 / -1; } }
+</style>

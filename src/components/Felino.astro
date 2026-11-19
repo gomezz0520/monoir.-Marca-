@@ -1,0 +1,17 @@
+---
+// El felino de MONOIR: una sola línea continua + ojos ámbar.
+interface Props { size?: number | string; ojos?: boolean; class?: string; titulo?: string }
+const { size = 40, ojos = true, class: clase = '', titulo } = Astro.props;
+---
+<svg class={`felino ${clase}`} width={size} height={size} viewBox="0 0 100 100" fill="none"
+  role={titulo ? 'img' : undefined} aria-hidden={titulo ? undefined : 'true'} aria-label={titulo}>
+  <path d="M46 91 C33 90 22 83 17 69 C12 53 14 34 22 13 L40 31 C46 28.5 54 28.5 60 31 L78 13 C86 34 88 53 83 69 C78.5 82 69 89.5 57 91 C63 86 70 87 76 92"
+    stroke="currentColor" stroke-width="4.2" stroke-linecap="round" stroke-linejoin="round" />
+  {ojos && (
+    <g class="felino-ojos">
+      <path d="M31 57 Q39 48.5 46 57 Q39 63 31 57 Z" fill="var(--ambar)" />
+      <path d="M54 57 Q61 48.5 69 57 Q61 63 54 57 Z" fill="var(--ambar)" />
+      <path d="M38.5 52.5 L38.5 61.5 M61.5 52.5 L61.5 61.5" stroke="var(--noche)" stroke-width="2.4" stroke-linecap="round" />
+    </g>
+  )}
+</svg>

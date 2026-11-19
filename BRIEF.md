@@ -129,7 +129,7 @@
 
 ## 13. Pendientes y recordatorios para el fundador
 
-- [ ] **Escoger una dirección visual** (ver sección 14).
+- [x] **Dirección visual elegida: A — "NOCHE"**.
 - [ ] Comprar el **dominio** (monoir.co / monoir.com.co) y crear el **correo de la marca**.
 - [ ] Inscribirse en **Wompi o Bold** (cédula, RUT y certificado bancario).
 - [ ] Definir los **precios finales** y el **monto del envío gratis**.

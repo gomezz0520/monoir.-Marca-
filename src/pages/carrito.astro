@@ -1,0 +1,199 @@
+---
+import Base from '../layouts/Base.astro';
+import { tienda } from '../data/config';
+const municipios = ['Medellín', 'Envigado', 'Sabaneta', 'Itagüí', 'Bello', 'La Estrella', 'Caldas', 'Copacabana', 'Girardota', 'Barbosa'];
+---
+<Base titulo="Tu carrito">
+  <section class="contenedor carrito" data-carrito
+    data-whatsapp={tienda.whatsapp} data-gratis={tienda.envioGratisDesde}
+    data-envio={tienda.envioMedellin} data-corte={tienda.horaCorte}>
+    <div class="cabeza">
+      <h1 class="titulo titulo-l">Tu carrito</h1>
+    </div>
+
+    <div class="vacio" data-vacio hidden>
+      <p class="titulo titulo-m">Está más vacío que el Lleras un lunes.</p>
+      <a href="/catalogo" class="boton boton-solido">Ir al catálogo</a>
+    </div>
+
+    <div class="columnas" data-lleno hidden>
+      <div>
+        <ul class="items" data-items></ul>
+        <p class="barra-gratis" data-barra-gratis></p>
+      </div>
+
+      <form class="pedido" data-pedido>
+        <h2 class="titulo titulo-m">Datos de entrega</h2>
+        <label>Nombre
+          <input name="nombre" autocomplete="name" required placeholder="¿Cómo te llamás?" />
+        </label>
+        <label>Dirección
+          <input name="direccion" autocomplete="street-address" required placeholder="Calle, número, apto o casa" />
+        </label>
+        <label>Municipio
+          <select name="municipio" required>
+            {municipios.map((m) => <option>{m}</option>)}
+            <option value="Otra ciudad">Otra ciudad de Colombia</option>
+          </select>
+        </label>
+
+        <fieldset class="pagos">
+          <legend>¿Cómo vas a pagar?</legend>
+          <label><input type="radio" name="pago" value="Contraentrega" checked /> <span><strong>Contraentrega</strong> · pagás cuando te llegue</span></label>
+          <label><input type="radio" name="pago" value="Nequi o transferencia" /> <span><strong>Nequi o transferencia</strong> · te mandamos los datos</span></label>
+          <label class="pronto"><input type="radio" name="pago" value="Tarjeta" disabled /> <span><strong>Tarjeta o PSE</strong> · muy pronto</span></label>
+        </fieldset>
+
+        <dl class="totales">
+          <div><dt>Subtotal</dt><dd data-subtotal></dd></div>
+          <div><dt>Envío</dt><dd data-envio></dd></div>
+          <div class="total"><dt>Total</dt><dd data-total></dd></div>
+        </dl>
+        <p class="entrega" data-entrega></p>
+
+        <button type="submit" class="boton boton-ambar boton-bloque">Enviar pedido por WhatsApp</button>
+        <p class="letra-chica">Confirmamos tu pedido por WhatsApp en minutos. Al enviarlo aceptás nuestra <a href="/cambios-y-devoluciones">política de cambios</a> y el <a href="/datos-personales">tratamiento de datos</a>.</p>
+      </form>
+    </div>
+  </section>
+</Base>
+
+<style>
+  .carrito { padding-block: clamp(2rem, 5vw, 3.5rem) 5rem; }
+  .cabeza { margin-bottom: 2rem; }
+  .vacio { text-align: center; padding: 4rem 0; display: grid; gap: 1.5rem; justify-items: center; }
+  [hidden] { display: none !important; }
+  .columnas { display: grid; grid-template-columns: 1.3fr 1fr; gap: clamp(1.5rem, 5vw, 4rem); align-items: start; }
+  .items { list-style: none; padding: 0; margin: 0; border-top: 1px solid var(--linea); }
+  .items :global(li) { display: grid; grid-template-columns: 1fr auto; gap: .4rem 1rem; padding: 1.2rem 0; border-bottom: 1px solid var(--linea); }
+  .items :global(.nombre) { font-weight: 600; text-decoration: none; }
+  .items :global(.talla) { color: var(--tinta-suave); font-size: .85rem; grid-column: 1; }
+  .items :global(.precio) { text-align: right; }
+  .items :global(.controles) { display: flex; align-items: center; gap: .3rem; grid-column: 1 / -1; }
+  .items :global(.controles button) { width: 36px; height: 36px; border: 1px solid var(--linea); background: none; cursor: pointer; font-size: 1rem; }
+  .items :global(.controles span) { min-width: 2ch; text-align: center; font-variant-numeric: tabular-nums; }
+  .items :global(.quitar) { margin-left: auto; width: auto !important; border: 0 !important; text-decoration: underline; font-size: .8rem !important; color: var(--tinta-suave); }
+  .barra-gratis { font-size: .88rem; padding: 1rem; background: var(--tarjeta); margin-top: 1.2rem; }
+
+  .pedido { position: sticky; top: 84px; display: grid; gap: 1rem; padding: 1.6rem; border: 1px solid var(--linea); }
+  .pedido h2 { margin-bottom: .2rem; }
+  .pedido label { display: grid; gap: .35rem; font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; }
+  .pedido input:not([type=radio]), .pedido select {
+    min-height: 48px; padding: 0 .9rem; border: 1px solid var(--linea); border-radius: var(--radio);
+    background: var(--fondo); font-size: 1rem; letter-spacing: 0; text-transform: none; font-weight: 400;
+  }
+  .pagos { border: 0; padding: 0; margin: 0; display: grid; gap: .5rem; }
+  .pagos legend { font-size: .78rem; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; margin-bottom: .5rem; }
+  .pagos label { display: flex; align-items: center; gap: .7rem; padding: .8rem; border: 1px solid var(--linea); text-transform: none; letter-spacing: 0; font-weight: 400; font-size: .9rem; cursor: pointer; }
+  .pagos label:has(input:checked) { border-color: var(--noche); }
+  .pagos input { accent-color: var(--noche); }
+  .pagos .pronto { opacity: .5; cursor: not-allowed; }
+  .totales { margin: .4rem 0 0; display: grid; gap: .4rem; }
+  .totales div { display: flex; justify-content: space-between; font-size: .92rem; }
+  .totales dt { color: var(--tinta-suave); }
+  .totales dd { margin: 0; font-variant-numeric: tabular-nums; }
+  .totales .total { border-top: 1px solid var(--linea); padding-top: .6rem; font-weight: 700; font-size: 1.05rem; }
+  .totales .total dt { color: var(--tinta); }
+  .entrega { margin: 0; font-size: .85rem; padding: .7rem .9rem; border-left: 3px solid var(--ambar); background: var(--tarjeta); }
+  .letra-chica { font-size: .75rem; color: var(--tinta-suave); margin: 0; }
+  @media (max-width: 860px) { .columnas { grid-template-columns: 1fr; } .pedido { position: static; } }
+</style>
+
+<script>
+  import { leer, cambiarCantidad, subtotal, cop, type Item } from '../scripts/carrito';
+
+  const raiz = document.querySelector<HTMLElement>('[data-carrito]')!;
+  const cfg = {
+    whatsapp: raiz.dataset.whatsapp!,
+    gratis: Number(raiz.dataset.gratis),
+    envio: Number(raiz.dataset.envio),
+    corte: Number(raiz.dataset.corte),
+  };
+  const $ = (s: string) => raiz.querySelector<HTMLElement>(s)!;
+  const form = raiz.querySelector<HTMLFormElement>('[data-pedido]')!;
+
+  const horaColombia = () => Number(new Intl.DateTimeFormat('en-US', { hour: 'numeric', hour12: false, timeZone: 'America/Bogota' }).format(new Date()));
+
+  function costoEnvio(sub: number) {
+    const municipio = (form.elements.namedItem('municipio') as HTMLSelectElement).value;
+    if (municipio === 'Otra ciudad') return { valor: 0, texto: 'Lo cotizamos por WhatsApp' };
+    if (sub >= cfg.gratis) return { valor: 0, texto: 'Gratis' };
+    return { valor: cfg.envio, texto: cop(cfg.envio) };
+  }
+
+  function pintar() {
+    const items = leer();
+    $('[data-vacio]').hidden = items.length > 0;
+    $('[data-lleno]').hidden = items.length === 0;
+    if (!items.length) return;
+
+    const ul = $('[data-items]');
+    ul.innerHTML = '';
+    for (const it of items) {
+      const li = document.createElement('li');
+      li.innerHTML = `
+        <a class="nombre" href="/producto/${it.slug}"></a>
+        <span class="precio">${cop(it.precio * it.cantidad)}</span>
+        <span class="talla">Talla ${it.talla}</span>
+        <div class="controles">
+          <button type="button" data-menos aria-label="Quitar una">−</button>
+          <span>${it.cantidad}</span>
+          <button type="button" data-mas aria-label="Agregar una">+</button>
+          <button type="button" class="quitar" data-quitar>Quitar</button>
+        </div>`;
+      li.querySelector('.nombre')!.textContent = it.nombre;
+      li.querySelector('[data-menos]')!.addEventListener('click', () => cambiarCantidad(it.slug, it.talla, it.cantidad - 1));
+      li.querySelector('[data-mas]')!.addEventListener('click', () => cambiarCantidad(it.slug, it.talla, it.cantidad + 1));
+      li.querySelector('[data-quitar]')!.addEventListener('click', () => cambiarCantidad(it.slug, it.talla, 0));
+      ul.append(li);
+    }
+
+    const sub = subtotal(items);
+    const envio = costoEnvio(sub);
+    $('[data-subtotal]').textContent = cop(sub);
+    $('[data-envio]').textContent = envio.texto;
+    $('[data-total]').textContent = cop(sub + envio.valor);
+
+    const falta = cfg.gratis - sub;
+    $('[data-barra-gratis]').textContent = falta > 0
+      ? `Te faltan ${cop(falta)} para el envío gratis. ¿Unas medias pa' completar?`
+      : '¡Listo! Tu envío es gratis.';
+
+    const municipio = (form.elements.namedItem('municipio') as HTMLSelectElement).value;
+    $('[data-entrega]').textContent = municipio === 'Otra ciudad'
+      ? 'Envíos nacionales: te confirmamos tiempo y valor por WhatsApp.'
+      : horaColombia() < cfg.corte
+        ? 'Si confirmás ahora, te llega HOY.'
+        : 'Ya pasaron las 2 p. m.: te llega mañana temprano.';
+  }
+
+  function mensaje(items: Item[]) {
+    const d = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    const sub = subtotal(items);
+    const envio = costoEnvio(sub);
+    const lineas = items.map((i) => `• ${i.cantidad} x ${i.nombre} (talla ${i.talla}) — ${cop(i.precio * i.cantidad)}`);
+    return [
+      '¡Hola MONOIR! Quiero hacer este pedido:',
+      '',
+      ...lineas,
+      '',
+      `Subtotal: ${cop(sub)}`,
+      `Envío: ${envio.texto}`,
+      `Total: ${cop(sub + envio.valor)}`,
+      '',
+      `Nombre: ${d.nombre}`,
+      `Dirección: ${d.direccion}, ${d.municipio}`,
+      `Pago: ${d.pago}`,
+    ].join('\n');
+  }
+
+  form.addEventListener('change', pintar);
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const items = leer();
+    if (!items.length) return;
+    window.open(`https://wa.me/${cfg.whatsapp}?text=${encodeURIComponent(mensaje(items))}`, '_blank', 'noopener');
+  });
+  window.addEventListener('carrito:cambio', pintar);
+  pintar();
+</script>

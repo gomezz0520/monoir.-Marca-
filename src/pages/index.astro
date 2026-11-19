@@ -1,0 +1,253 @@
+---
+import Base from '../layouts/Base.astro';
+import Wordmark from '../components/Wordmark.astro';
+import Felino from '../components/Felino.astro';
+import Tarjeta from '../components/Tarjeta.astro';
+import Prenda from '../components/Prenda.astro';
+import { productos } from '../data/productos';
+import { tienda, formatoCOP } from '../data/config';
+
+const nuevos = productos.filter((p) => p.nuevo && !p.proximamente).slice(0, 4);
+const drop = productos.find((p) => p.proximamente);
+const mensajes = [
+  `Pedí antes de las 2 p. m. y te llega hoy`,
+  `Envío gratis desde ${formatoCOP(tienda.envioGratisDesde)}`,
+  `Cambio de talla gratis por 15 días`,
+  `Pagá contraentrega o por Nequi`,
+];
+const calle = [
+  { texto: 'Provenza, 11:47 p. m.', tono: '#1d1a17' },
+  { texto: 'Estación Poblado', tono: '#15171b' },
+  { texto: 'Terraza en Laureles', tono: '#1b1716' },
+  { texto: 'Las Palmas, 2 a. m.', tono: '#141416' },
+  { texto: 'Parque Lleras', tono: '#19161a' },
+  { texto: 'La 70', tono: '#161816' },
+];
+---
+<Base tema="oscuro">
+  <!-- ═══ PORTADA ═══ -->
+  <section class="portada grano">
+    <div class="halo" aria-hidden="true"></div>
+    <div class="contenedor portada-contenido">
+      <p class="etiqueta">Streetwear · Medellín</p>
+      <Wordmark as="h1" ojos class="portada-marca" />
+      <p class="lema titulo">Pa' los que brillan de noche.</p>
+      <div class="acciones">
+        <a href="/catalogo" class="boton boton-ambar">Ver lo nuevo</a>
+        <a href="#drop" class="boton boton-linea">Próximo drop</a>
+      </div>
+    </div>
+    <a href="#nuevo" class="bajar" aria-label="Bajar a lo nuevo">
+      <span></span>
+    </a>
+  </section>
+
+  <!-- ═══ CINTA DE BENEFICIOS ═══ -->
+  <div class="cinta" aria-label="Beneficios">
+    <div class="cinta-pista">
+      {[0, 1].map((n) => (
+        <p aria-hidden={n === 1 ? 'true' : undefined}>
+          {mensajes.map((m) => <><span>{m}</span><Felino size={18} ojos={false} /></>)}
+        </p>
+      ))}
+    </div>
+  </div>
+
+  <!-- ═══ NEW IN (oscuro) ═══ -->
+  <section id="nuevo" class="seccion">
+    <div class="contenedor">
+      <div class="cabeza">
+        <div>
+          <p class="etiqueta">New in</p>
+          <h2 class="titulo titulo-l">Lo que acaba de llegar</h2>
+        </div>
+        <a href="/catalogo" class="ver-todo">Ver todo →</a>
+      </div>
+      <div class="rejilla">
+        {nuevos.map((p) => <Tarjeta p={p} oscura />)}
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ PRÓXIMO DROP ═══ -->
+  {drop && (
+    <section id="drop" class="drop grano">
+      <div class="contenedor drop-fila">
+        <div class="drop-imagen" aria-hidden="true">
+          <Prenda tipo={drop.tipo} color={drop.color.hex} lado="espalda" estampado />
+        </div>
+        <div class="drop-texto">
+          <p class="etiqueta"><span class="punto"></span> Próximo drop</p>
+          <h2 class="titulo titulo-l">{tienda.drop.nombre.replace('Drop 01 — ', '')}</h2>
+          <p class="drop-desc">Drop 01. Solo <strong>{tienda.drop.unidades} unidades</strong>, numeradas. Cuando se acaben, no vuelven. Te avisamos primero por WhatsApp.</p>
+          <div class="cuenta" data-cuenta={tienda.drop.fecha} role="timer" aria-label="Tiempo para el drop">
+            {['Días', 'Horas', 'Min', 'Seg'].map((u) => (
+              <div><span class="titulo" data-unidad={u}>--</span><small>{u}</small></div>
+            ))}
+          </div>
+          <form class="registro" data-registro>
+            <label for="wa-num" class="sr-only">Tu número de WhatsApp</label>
+            <input id="wa-num" name="numero" type="tel" inputmode="tel" autocomplete="tel" placeholder="Tu WhatsApp (ej. 300 123 4567)" required pattern="[0-9 +]{10,16}" />
+            <button class="boton boton-ambar" type="submit">Avisame primero</button>
+            <label class="acepto">
+              <input type="checkbox" required /> Acepto el <a href="/datos-personales">tratamiento de mis datos</a> para recibir avisos de MONOIR.
+            </label>
+          </form>
+        </div>
+      </div>
+    </section>
+  )}
+
+  <!-- ═══ DE NOCHE A DÍA: transición a claro ═══ -->
+  <div class="amanecer" aria-hidden="true"></div>
+
+  <!-- ═══ EL MONO (claro) ═══ -->
+  <section class="historia">
+    <div class="contenedor historia-fila">
+      <div class="historia-marca" aria-hidden="true">
+        <Felino size="100%" />
+      </div>
+      <div>
+        <p class="etiqueta">La historia</p>
+        <h2 class="titulo titulo-l">Primero fue El Mono.</h2>
+        <p>A los 15 años, un pelado de piel blanca y pelo mono empezó a vender ropa con el apodo que le pusieron en el barrio. La marca se llamó <strong>El Mono</strong>. Se pausó, pero nunca se apagó.</p>
+        <p>Hoy vuelve como <strong>MONOIR</strong>: <em>mono</em> por él, <em>noir</em> por la noche. Blanco y negro. El que se ve y el que se esconde.</p>
+        <a href="/el-mono" class="boton boton-solido">Leer la historia</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══ MONOIR EN LA CALLE ═══ -->
+  <section class="calle">
+    <div class="contenedor">
+      <div class="cabeza">
+        <div>
+          <p class="etiqueta">Monoir en la calle</p>
+          <h2 class="titulo titulo-m">Etiquetanos y salís acá</h2>
+        </div>
+        <a href={tienda.instagram} class="ver-todo" target="_blank" rel="noopener">Instagram →</a>
+      </div>
+      <div class="calle-fila">
+        {calle.map((c) => (
+          <a href={tienda.instagram} target="_blank" rel="noopener" class="foto-calle grano" style={`--tono:${c.tono}`}>
+            <Felino size={34} />
+            <span>{c.texto}</span>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</Base>
+
+<style>
+  /* Portada */
+  .portada {
+    position: relative; min-height: calc(100svh - 96px); display: grid; place-items: center;
+    background: radial-gradient(120% 80% at 50% 110%, #1a1610 0%, var(--noche) 55%);
+    overflow: hidden; text-align: center;
+  }
+  .halo {
+    position: absolute; width: 60vmin; height: 30vmin; left: 50%; top: 44%; transform: translate(-50%, -50%);
+    background: radial-gradient(closest-side, rgba(232, 162, 58, .16), transparent); filter: blur(20px);
+  }
+  .portada-contenido { position: relative; padding-block: 4rem; }
+  :global(.portada-marca) { font-size: clamp(3.4rem, 15vw, 12rem); margin: 1.2rem 0 1.4rem; letter-spacing: .08em; font-weight: 400; }
+  .lema { font-size: clamp(1.1rem, 2.6vw, 1.7rem); color: var(--niebla); letter-spacing: .06em; }
+  .acciones { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; margin-top: 2.6rem; }
+  .bajar { position: absolute; bottom: 28px; left: 50%; transform: translateX(-50%); width: 26px; height: 42px; border: 1.5px solid var(--humo); border-radius: 14px; }
+  .bajar span { position: absolute; left: 50%; top: 8px; width: 3px; height: 8px; margin-left: -1.5px; border-radius: 2px; background: var(--ambar); animation: bajar 1.8s infinite; }
+  @keyframes bajar { 0% { opacity: 0; transform: translateY(0); } 40% { opacity: 1; } 100% { opacity: 0; transform: translateY(14px); } }
+
+  /* Cinta */
+  .cinta { border-block: 1px solid var(--linea); overflow: hidden; background: var(--noche); }
+  .cinta-pista { display: flex; width: max-content; animation: cinta 38s linear infinite; }
+  .cinta p { display: flex; align-items: center; gap: 1.6rem; margin: 0; padding: 1rem .8rem; white-space: nowrap; font-family: var(--f-titulo); text-transform: uppercase; letter-spacing: .08em; font-size: 1rem; }
+  .cinta p :global(svg) { color: var(--humo); }
+  @keyframes cinta { to { transform: translateX(-50%); } }
+
+  /* Secciones */
+  .seccion { padding: clamp(4rem, 9vw, 7rem) 0; }
+  .cabeza { display: flex; justify-content: space-between; align-items: end; gap: 1rem; margin-bottom: 2.2rem; }
+  .cabeza .etiqueta { margin: 0 0 .6rem; }
+  .ver-todo { font-size: .8rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; text-decoration: none; white-space: nowrap; }
+  .ver-todo:hover { color: var(--ambar); }
+  .rejilla { display: grid; grid-template-columns: repeat(4, 1fr); gap: 1.4rem; }
+  @media (max-width: 960px) { .rejilla { grid-template-columns: repeat(2, 1fr); gap: 1.4rem .9rem; } }
+
+  /* Drop */
+  .drop { background: #070708; padding: clamp(4rem, 9vw, 7rem) 0; border-top: 1px solid var(--linea); }
+  .drop-fila { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(2rem, 6vw, 5rem); align-items: center; }
+  .drop-imagen { background: radial-gradient(closest-side, rgba(232,162,58,.10), transparent 70%); padding: 6%; }
+  .drop-imagen :global(svg) { width: 100%; height: auto; }
+  .drop-texto .etiqueta { display: flex; align-items: center; gap: .6rem; color: var(--ambar); }
+  .punto { width: 8px; height: 8px; border-radius: 50%; background: var(--ambar); box-shadow: 0 0 10px var(--ambar); animation: latido 1.6s infinite; }
+  @keyframes latido { 50% { opacity: .3; } }
+  .drop-desc { color: var(--tinta-suave); max-width: 44ch; margin: 1.2rem 0 2rem; }
+  .drop-desc strong { color: var(--tinta); }
+  .cuenta { display: grid; grid-template-columns: repeat(4, 1fr); gap: .6rem; max-width: 420px; margin-bottom: 2rem; }
+  .cuenta div { border: 1px solid var(--linea); padding: .9rem .4rem; text-align: center; }
+  .cuenta span { display: block; font-size: clamp(1.8rem, 4vw, 2.6rem); font-variant-numeric: tabular-nums; }
+  .cuenta small { font-size: .65rem; letter-spacing: .16em; text-transform: uppercase; color: var(--tinta-suave); }
+  .registro { display: grid; grid-template-columns: 1fr auto; gap: .6rem; max-width: 520px; }
+  .registro input[type=tel] { min-height: 52px; padding: 0 1rem; background: transparent; border: 1px solid #3a3a3e; border-radius: var(--radio); }
+  .registro input[type=tel]::placeholder { color: #77777b; }
+  .acepto { grid-column: 1 / -1; font-size: .78rem; color: var(--tinta-suave); display: flex; gap: .5rem; align-items: flex-start; }
+  .acepto input { margin-top: .25rem; accent-color: var(--ambar); }
+  @media (max-width: 760px) {
+    .drop-fila { grid-template-columns: 1fr; }
+    .drop-imagen { max-width: 340px; margin-inline: auto; }
+    .registro { grid-template-columns: 1fr; }
+  }
+
+  /* Amanecer: de la noche al catálogo claro */
+  .amanecer { height: 180px; background: linear-gradient(#070708, #2a2724 35%, #cfcac1 80%, var(--blanco)); }
+
+  /* Historia y calle (claro) */
+  .historia, .calle { background: var(--blanco); color: var(--noche); --tinta-suave: #55555a; --linea: #e2dfd8; }
+  .historia { padding: clamp(3rem, 7vw, 6rem) 0; }
+  .historia-fila { display: grid; grid-template-columns: .8fr 1.2fr; gap: clamp(2rem, 6vw, 6rem); align-items: center; }
+  .historia-marca { max-width: 360px; width: 100%; justify-self: center; color: var(--noche); }
+  .historia p { color: #44444a; max-width: 52ch; font-size: 1.05rem; }
+  .historia .titulo { margin: .6rem 0 1.4rem; }
+  .historia .boton { margin-top: 1.2rem; color: var(--blanco); background: var(--noche); border-color: var(--noche); }
+  @media (max-width: 760px) { .historia-fila { grid-template-columns: 1fr; } .historia-marca { max-width: 180px; } }
+
+  .calle { padding: 0 0 clamp(4rem, 8vw, 6rem); }
+  .calle-fila { display: grid; grid-template-columns: repeat(6, 1fr); gap: .8rem; }
+  .foto-calle {
+    aspect-ratio: 3 / 4; display: grid; place-items: center; align-content: center; gap: .8rem; text-decoration: none;
+    background: radial-gradient(80% 60% at 30% 20%, rgba(255,255,255,.10), transparent), var(--tono);
+    color: var(--hueso); text-align: center; padding: 1rem; transition: transform .3s;
+  }
+  .foto-calle:hover { transform: translateY(-4px); }
+  .foto-calle span { font-size: .72rem; letter-spacing: .12em; text-transform: uppercase; color: #b9b6b0; }
+  @media (max-width: 960px) {
+    .calle-fila { grid-template-columns: none; grid-auto-flow: column; grid-auto-columns: 42%; overflow-x: auto; scroll-snap-type: x mandatory; padding-bottom: .5rem; }
+    .foto-calle { scroll-snap-align: start; }
+  }
+</style>
+
+<script>
+  import { tienda, linkWhatsApp } from '../data/config';
+
+  // Cuenta regresiva del drop
+  const cuenta = document.querySelector<HTMLElement>('[data-cuenta]');
+  if (cuenta) {
+    const meta = new Date(cuenta.dataset.cuenta!).getTime();
+    const celdas = cuenta.querySelectorAll<HTMLElement>('[data-unidad]');
+    const tick = () => {
+      let s = Math.max(0, Math.floor((meta - Date.now()) / 1000));
+      const v = [Math.floor(s / 86400), Math.floor((s % 86400) / 3600), Math.floor((s % 3600) / 60), s % 60];
+      celdas.forEach((c, i) => (c.textContent = String(v[i]).padStart(2, '0')));
+    };
+    tick(); setInterval(tick, 1000);
+  }
+
+  // Registro al drop: por ahora se confirma por WhatsApp (sin base de datos).
+  document.querySelector<HTMLFormElement>('[data-registro]')?.addEventListener('submit', (e) => {
+    e.preventDefault();
+    const num = (new FormData(e.currentTarget as HTMLFormElement).get('numero') as string).trim();
+    const msg = `¡Hola MONOIR! Quiero que me avisen primero del ${tienda.drop.nombre}. Mi WhatsApp: ${num}`;
+    window.open(linkWhatsApp(msg), '_blank', 'noopener');
+  });
+</script>

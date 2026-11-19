@@ -6,9 +6,9 @@ export const tienda = {
   nombre: 'MONOIR',
   // WhatsApp de la tienda (57 + celular, sin espacios ni +).
   whatsapp: '573218294282',
-  // PENDIENTE: usuarios reales de redes.
-  instagram: 'https://instagram.com/',
-  tiktok: 'https://tiktok.com/',
+  // Redes de la marca.
+  instagram: 'https://www.instagram.com/monoir.mde/',
+  tiktok: 'https://www.tiktok.com/@monoir.mde',
   // Envío gratis desde este valor (recomendado en el brief).
   envioGratisDesde: 180000,
   // Valor del envío en Medellín y el Valle de Aburrá.

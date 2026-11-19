@@ -138,7 +138,7 @@
 - [ ] **Fotos** de las prendas de marca blanca.
 - [ ] **Medidas** de cada prenda para la guía de tallas.
 - [x] WhatsApp de la tienda: +57 321 829 4282.
-- [ ] Usuarios de Instagram y TikTok de la marca (aún no existen).
+- [x] Redes: Instagram @monoir.mde y TikTok @monoir.mde.
 - [ ] Fijar la **fecha de lanzamiento**.
 - [ ] **Versión 2:** cuentas de cliente y fidelización (el fundador pidió que se lo recordemos).
 

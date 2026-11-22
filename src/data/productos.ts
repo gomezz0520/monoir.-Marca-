@@ -8,6 +8,8 @@
 
 export type Tipo = 'camiseta' | 'buzo' | 'jogger' | 'jean' | 'boxer' | 'medias';
 export type Genero = 'hombre' | 'mujer' | 'unisex';
+/** Corte de la prenda. Lo usa el probador 3D para saber qué holgura es la "ideal". */
+export type Ajuste = 'oversize' | 'boxy' | 'regular' | 'recto' | 'baggy' | 'jogger';
 
 export interface Producto {
   slug: string;
@@ -33,6 +35,13 @@ export interface Producto {
   estampadoEspalda?: boolean;
   /** Fotos reales (frente, espalda). Cuando existan, reemplazan la ilustración. */
   fotos?: { frente: string; espalda: string };
+  /**
+   * Los productos con el mismo `modelo` son la misma prenda en otro color.
+   * En el perchero aparecen como etiquetas de color colgando.
+   */
+  modelo?: string;
+  /** Corte de la prenda (para el probador 3D). Sin `ajuste`, no sale en el probador. */
+  ajuste?: Ajuste;
 }
 
 const medidasCamiseta = {
@@ -63,6 +72,7 @@ export const productos: Producto[] = [
     descripcion: 'La negra que combina con todo, hasta con tus malas decisiones. Corte ancho, hombro caído y algodón pesado que no se vuelve trapo a la tercera lavada.',
     detalles: ['Algodón 100% peinado, 220 g', 'Corte oversize, hombro caído', 'Felino bordado en el pecho', 'Etiqueta MONOIR en el cuello'],
     nuevo: true,
+    modelo: 'camiseta-oversize', ajuste: 'oversize',
   },
   {
     slug: 'camiseta-oversize-mono',
@@ -74,6 +84,7 @@ export const productos: Producto[] = [
     descripcion: 'El lado "mono" de la marca. Blanco hueso, no blanco hospital. Pesada, ancha y lista para el parche.',
     detalles: ['Algodón 100% peinado, 220 g', 'Corte oversize, hombro caído', 'Felino bordado en el pecho', 'Etiqueta MONOIR en el cuello'],
     nuevo: true,
+    modelo: 'camiseta-oversize', ajuste: 'oversize',
   },
   {
     slug: 'camiseta-boxy-humo',
@@ -87,6 +98,7 @@ export const productos: Producto[] = [
     descripcion: 'Corta, cuadrada y con actitud. Pa\' que la cintura del jean alto se vea, mi niña.',
     detalles: ['Algodón 100%, 200 g', 'Corte boxy, largo a la cintura', 'Felino bordado tono sobre tono'],
     nuevo: true,
+    ajuste: 'boxy',
   },
   {
     slug: 'buzo-capota-madrugada',
@@ -98,6 +110,18 @@ export const productos: Producto[] = [
     descripcion: 'Pa\' cuando el parche se alarga y en Las Palmas hace frío. Felpa por dentro, capota doble y bolsillo canguro.',
     detalles: ['Algodón perchado 340 g', 'Capota doble sin cordón', 'Bolsillo canguro', 'Felino bordado en la espalda alta'],
     nuevo: true,
+    modelo: 'buzo-capota', ajuste: 'oversize',
+  },
+  {
+    slug: 'buzo-capota-alba',
+    nombre: 'Buzo Capota Alba',
+    tipo: 'buzo', categoria: 'Buzos', genero: 'unisex', linea: 'Básicos',
+    precio: 139000,
+    color: { nombre: 'Hueso', hex: '#E7E2D8' },
+    tallas: ['S', 'M', 'L', 'XL', 'XXL'], ...medidasBuzo,
+    descripcion: 'El mismo buzo de la madrugada, pero pa\' cuando sale el sol y seguís en la calle. Claro, pesado y sin miedo a la mancha.',
+    detalles: ['Algodón perchado 340 g', 'Capota doble sin cordón', 'Bolsillo canguro', 'Felino bordado en la espalda alta'],
+    modelo: 'buzo-capota', ajuste: 'oversize',
   },
   {
     slug: 'buzo-cuello-redondo-niebla',
@@ -108,6 +132,7 @@ export const productos: Producto[] = [
     tallas: ['S', 'M', 'L', 'XL'], ...medidasBuzo,
     descripcion: 'Gris como Medellín a las 6 a. m. Va con todo y no le pide permiso a nadie.',
     detalles: ['Algodón perchado 320 g', 'Puños y pretina en rib', 'Felino bordado en el pecho'],
+    ajuste: 'regular',
   },
   {
     slug: 'jogger-cargo-asfalto',
@@ -118,6 +143,7 @@ export const productos: Producto[] = [
     tallas: ['S', 'M', 'L', 'XL'], ...medidasJogger,
     descripcion: 'Bolsillos pa\' el celular, las llaves y el chicle. Resorte en la cintura y en el tobillo, cero drama.',
     detalles: ['Dril de algodón con elastano', 'Bolsillos cargo con tapa', 'Cintura elástica con cordón', 'Puño elástico en el tobillo'],
+    modelo: 'jogger-cargo', ajuste: 'jogger',
   },
   {
     slug: 'jogger-cargo-arena',
@@ -128,6 +154,18 @@ export const productos: Producto[] = [
     tallas: ['S', 'M', 'L', 'XL'], ...medidasJogger,
     descripcion: 'El cargo de siempre en el color que todo el mundo te va a preguntar dónde compraste.',
     detalles: ['Dril de algodón con elastano', 'Bolsillos cargo con tapa', 'Cintura elástica con cordón', 'Puño elástico en el tobillo'],
+    modelo: 'jogger-cargo', ajuste: 'jogger',
+  },
+  {
+    slug: 'jogger-cargo-oliva',
+    nombre: 'Jogger Cargo Oliva',
+    tipo: 'jogger', categoria: 'Joggers', genero: 'hombre', linea: 'Básicos',
+    precio: 119000,
+    color: { nombre: 'Oliva', hex: '#4F5336' },
+    tallas: ['S', 'M', 'L', 'XL'], ...medidasJogger,
+    descripcion: 'Verde monte, pa\' los que se pierden en el parque Arví y vuelven con estilo.',
+    detalles: ['Dril de algodón con elastano', 'Bolsillos cargo con tapa', 'Cintura elástica con cordón', 'Puño elástico en el tobillo'],
+    modelo: 'jogger-cargo', ajuste: 'jogger',
   },
   {
     slug: 'jean-recto-medianoche',
@@ -138,6 +176,7 @@ export const productos: Producto[] = [
     tallas: ['28', '30', '32', '34', '36'], ...medidasPantalon,
     descripcion: 'Azul tan oscuro que de noche parece negro. Recto, ni pegado ni de payaso.',
     detalles: ['Denim 12 oz con leve elasticidad', 'Corte recto, tiro medio', 'Botón metálico MONOIR', 'Parche de cuero en la pretina'],
+    ajuste: 'recto',
   },
   {
     slug: 'jean-baggy-ceniza',
@@ -151,6 +190,7 @@ export const productos: Producto[] = [
     descripcion: 'Ancho, tiro alto y negro lavado. Con tenis o con botas, siempre se ve como que sabés lo que hacés.',
     detalles: ['Denim 100% algodón, 13 oz', 'Corte baggy, tiro alto', 'Lavado negro ceniza'],
     nuevo: true,
+    ajuste: 'baggy',
   },
   {
     slug: 'boxer-pack-x3',
@@ -188,9 +228,30 @@ export const productos: Producto[] = [
     edicion: 50,
     proximamente: true,
     estampadoEspalda: true,
+    ajuste: 'oversize',
   },
 ];
 
 export const categorias = ['Camisetas', 'Buzos', 'Joggers', 'Jeans', 'Interior'] as const;
 
 export const buscar = (slug: string) => productos.find((p) => p.slug === slug);
+
+/** Otros colores de la misma prenda (incluye el producto mismo). */
+export const coloresDe = (p: Producto) =>
+  p.modelo ? productos.filter((x) => x.modelo === p.modelo) : [p];
+
+/** Medidas de una talla con nombres claros, en cm. */
+export function medidasTalla(p: Producto, talla: string) {
+  const fila = p.medidas[talla];
+  const m: { anchoPecho?: number; largo?: number; manga?: number; cintura?: number; cadera?: number } = {};
+  if (!fila) return m;
+  p.columnasMedidas.forEach((col, i) => {
+    const c = col.toLowerCase();
+    if (c.includes('pecho')) m.anchoPecho = fila[i];
+    else if (c.includes('manga')) m.manga = fila[i];
+    else if (c.includes('cintura')) m.cintura = fila[i];
+    else if (c.includes('cadera')) m.cadera = fila[i];
+    else if (c.includes('largo')) m.largo = fila[i];
+  });
+  return m;
+}

@@ -1,0 +1,339 @@
+---
+import Base from '../layouts/Base.astro';
+import { productos, medidasTalla, categorias } from '../data/productos';
+
+const tipos = ['camiseta', 'buzo', 'jogger', 'jean'];
+const enProbador = productos.filter((p) => p.ajuste && tipos.includes(p.tipo));
+const datos = enProbador.map((p) => ({
+  slug: p.slug, nombre: p.nombre, tipo: p.tipo, ajuste: p.ajuste, capota: p.slug.includes('capota'),
+  genero: p.genero, color: p.color, precio: p.precio, proximamente: !!p.proximamente, categoria: p.categoria,
+  tallas: p.tallas.map((t) => ({ talla: t, medidas: medidasTalla(p, t) })),
+}));
+const grupos = categorias.map((c) => ({ c, items: enProbador.filter((p) => p.categoria === c) })).filter((g) => g.items.length);
+const niveles = [
+  ['aprieta', 'Aprieta'], ['justa', 'Justa'], ['comoda', 'Cómoda'], ['holgada', 'Holgada'], ['muy-holgada', 'Muy holgada'],
+];
+---
+<Base titulo="Probador 3D" descripcion="Medite la prenda antes de pedirla: poné tu altura y tu peso y mirá en 3D cómo te queda cada talla.">
+  <section class="contenedor intro">
+    <p class="etiqueta">Probador 3D · Beta</p>
+    <h1 class="titulo titulo-l">Medítela antes de pedirla</h1>
+    <p class="sub">Poné tu altura y tu peso. Armamos un maniquí de tus medidas y le ponemos la prenda en cada talla, con las medidas reales de la guía.</p>
+  </section>
+
+  <section class="contenedor probador">
+    <div class="visor" data-visor>
+      <div class="capa-etiquetas" data-capa-etiquetas aria-hidden="true"></div>
+      <p class="cargando" data-cargando>Armando el maniquí…</p>
+      <div class="controles-visor">
+        <div class="grupo-botones" role="group" aria-label="Encuadre">
+          <button type="button" data-encuadre="prenda" class="activo" aria-pressed="true">La prenda</button>
+          <button type="button" data-encuadre="entero" aria-pressed="false">Cuerpo entero</button>
+        </div>
+        <button type="button" class="boton-mapa" data-mapa aria-pressed="false">
+          <span class="arcoiris" aria-hidden="true"></span> Mapa de ajuste
+        </button>
+      </div>
+      <ul class="leyenda" data-leyenda hidden>
+        {niveles.map(([id, nombre]) => <li><i data-nivel={id}></i>{nombre}</li>)}
+      </ul>
+      <p class="pista" data-pista>Arrastrá pa' girar el maniquí</p>
+    </div>
+
+    <form class="panel" data-panel>
+      <label class="campo">
+        <span class="campo-titulo">Prenda</span>
+        <select name="prenda" data-prenda>
+          {grupos.map((g) => (
+            <optgroup label={g.c}>
+              {g.items.map((p) => <option value={p.slug}>{p.nombre} · {p.color.nombre}</option>)}
+            </optgroup>
+          ))}
+        </select>
+      </label>
+
+      <fieldset class="campo">
+        <legend class="campo-titulo">Talla</legend>
+        <div class="tallas" data-tallas></div>
+      </fieldset>
+
+      <fieldset class="campo cuerpo">
+        <legend class="campo-titulo">Tu cuerpo</legend>
+        <div class="segmentado" role="radiogroup" aria-label="Cuerpo">
+          <label><input type="radio" name="sexo" value="hombre" checked /><span>Hombre</span></label>
+          <label><input type="radio" name="sexo" value="mujer" /><span>Mujer</span></label>
+        </div>
+        <label class="deslizador">
+          <span>Altura <output data-salida="altura">175 cm</output></span>
+          <input type="range" name="altura" min="145" max="205" step="1" value="175" />
+        </label>
+        <label class="deslizador">
+          <span>Peso <output data-salida="peso">72 kg</output></span>
+          <input type="range" name="peso" min="40" max="130" step="1" value="72" />
+        </label>
+        <details class="exactas">
+          <summary>Sé mis medidas exactas (opcional)</summary>
+          <p>Medí con un metro de costura, sin apretar. Si las dejás vacías, las calculamos con tu altura y peso.</p>
+          <div class="tres">
+            <label>Pecho <input type="number" name="pecho" inputmode="numeric" min="60" max="160" placeholder="cm" /></label>
+            <label>Cintura <input type="number" name="cintura" inputmode="numeric" min="50" max="160" placeholder="cm" /></label>
+            <label>Cadera <input type="number" name="cadera" inputmode="numeric" min="60" max="170" placeholder="cm" /></label>
+          </div>
+        </details>
+      </fieldset>
+
+      <div class="resultado" data-resultado aria-live="polite">
+        <p class="recomendacion" data-recomendacion></p>
+        <ul class="zonas" data-zonas></ul>
+      </div>
+
+      <button type="button" class="boton boton-solido boton-bloque" data-agregar>Agregar al carrito</button>
+      <a class="boton boton-ambar boton-bloque" href="/#drop" data-drop hidden>Sale en el próximo drop · Avisame</a>
+      <p class="links"><a href="#" data-detalle>Ver detalles de la prenda ↗</a> <a href="/perchero">Ir al perchero ↗</a></p>
+      <p class="aviso-legal">Es una simulación aproximada: calculamos tus medidas con promedios de personas de tu altura y peso. La guía de tallas manda. ¿Dudás? Escribinos por WhatsApp y te ayudamos.</p>
+    </form>
+  </section>
+
+  <script type="application/json" id="datos-probador" set:html={JSON.stringify(datos)} />
+</Base>
+
+<style>
+  .intro { padding-block: clamp(1.6rem, 4vw, 2.6rem) 1.2rem; }
+  .intro .titulo { margin: .4rem 0 .8rem; }
+  .sub { color: var(--tinta-suave); margin: 0; max-width: 60ch; }
+
+  .probador { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr); gap: clamp(1.2rem, 4vw, 3.5rem); align-items: start; padding-bottom: 5rem; }
+  .probador > * { min-width: 0; }
+  .visor {
+    position: sticky; top: 84px; height: min(78vh, 760px); min-height: 420px; overflow: hidden;
+    background: radial-gradient(70% 60% at 50% 40%, #ffffff, #ece8e0);
+    border: 1px solid var(--linea);
+  }
+  .visor :global(canvas) { display: block; width: 100%; height: 100%; cursor: grab; }
+  .visor :global(canvas:active) { cursor: grabbing; }
+  .cargando { position: absolute; inset: 0; display: grid; place-items: center; margin: 0; color: var(--tinta-suave); font-size: .9rem; letter-spacing: .08em; }
+  .cargando[hidden] { display: none; }
+  .capa-etiquetas { position: absolute; inset: 0; pointer-events: none; z-index: 2; }
+  .capa-etiquetas :global(.etiqueta-3d) {
+    position: absolute; left: 0; top: 0; margin: -15px 0 0 10px; white-space: nowrap;
+    display: inline-flex; align-items: center; gap: .35rem; padding: .3rem .65rem; border-radius: 99px;
+    background: rgba(255,255,255,.92); box-shadow: 0 4px 14px rgba(0,0,0,.12); font-size: .72rem; color: var(--noche);
+    transition: opacity .25s;
+  }
+  .capa-etiquetas :global(.etiqueta-3d i) { width: 8px; height: 8px; border-radius: 50%; }
+  .capa-etiquetas :global(.etiqueta-3d span) { font-variant-numeric: tabular-nums; color: #55555a; }
+  .controles-visor { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; gap: .5rem; flex-wrap: wrap; z-index: 3; }
+  .grupo-botones { display: inline-flex; background: rgba(255,255,255,.9); border: 1px solid var(--linea); border-radius: 99px; padding: 3px; }
+  .grupo-botones button, .boton-mapa {
+    min-height: 34px; padding: 0 .9rem; border: 0; border-radius: 99px; background: none; cursor: pointer;
+    font-size: .7rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-suave);
+  }
+  .grupo-botones button.activo { background: var(--noche); color: var(--blanco); }
+  .boton-mapa { display: inline-flex; align-items: center; gap: .45rem; background: rgba(255,255,255,.9); border: 1px solid var(--linea); color: var(--noche); }
+  .boton-mapa[aria-pressed="true"] { background: var(--noche); color: var(--blanco); border-color: var(--noche); }
+  .arcoiris { width: 14px; height: 14px; border-radius: 50%; background: conic-gradient(#e5484d, #f2a93b, #3fa45b, #2f8fd1, #6b5bd6, #e5484d); }
+  .leyenda { position: absolute; left: 12px; bottom: 12px; z-index: 3; display: flex; flex-wrap: wrap; gap: .3rem .8rem; margin: 0; padding: .5rem .8rem; list-style: none; background: rgba(255,255,255,.92); border-radius: 10px; font-size: .7rem; }
+  .leyenda[hidden] { display: none; }
+  .leyenda li { display: inline-flex; align-items: center; gap: .3rem; }
+  .leyenda i { width: 10px; height: 10px; border-radius: 50%; }
+  .leyenda i[data-nivel="aprieta"] { background: #e5484d; } .leyenda i[data-nivel="justa"] { background: #f2a93b; }
+  .leyenda i[data-nivel="comoda"] { background: #3fa45b; } .leyenda i[data-nivel="holgada"] { background: #2f8fd1; }
+  .leyenda i[data-nivel="muy-holgada"] { background: #6b5bd6; }
+  .pista { position: absolute; right: 12px; bottom: 12px; margin: 0; z-index: 3; font-size: .7rem; color: var(--tinta-suave); letter-spacing: .06em; transition: opacity .4s; }
+
+  .panel { display: grid; gap: 1.4rem; }
+  .campo { border: 0; padding: 0; margin: 0; display: grid; gap: .6rem; }
+  .campo-titulo { font-size: .74rem; font-weight: 700; letter-spacing: .14em; text-transform: uppercase; padding: 0; }
+  select {
+    width: 100%; min-width: 0; text-overflow: ellipsis;
+    min-height: 50px; padding: 0 2.4rem 0 1rem; border: 1px solid var(--linea); border-radius: var(--radio); font-size: 1rem;
+    background: var(--fondo) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%230b0b0c' stroke-width='1.4'/%3E%3C/svg%3E") no-repeat right 1rem center;
+    appearance: none; cursor: pointer;
+  }
+  .tallas { display: flex; flex-wrap: wrap; gap: .45rem; }
+  .tallas :global(label) { position: relative; }
+  .tallas :global(input) { position: absolute; opacity: 0; pointer-events: none; }
+  .tallas :global(span) {
+    display: grid; place-items: center; min-width: 56px; min-height: 48px; padding: 0 .9rem;
+    border: 1px solid var(--linea); cursor: pointer; font-weight: 600; font-size: .9rem; background: var(--fondo);
+  }
+  .tallas :global(input:checked + span) { background: var(--noche); color: var(--blanco); border-color: var(--noche); }
+  .tallas :global(input:focus-visible + span) { outline: 2px solid var(--ambar); outline-offset: 2px; }
+  .tallas :global(.reco) {
+    position: absolute; top: -9px; left: 50%; transform: translateX(-50%); padding: 1px 6px; border-radius: 99px;
+    background: var(--ambar); color: var(--noche); font-size: .56rem; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; white-space: nowrap; pointer-events: none;
+  }
+  .segmentado { display: inline-flex; border: 1.5px solid var(--noche); border-radius: 99px; padding: 3px; width: max-content; }
+  .segmentado input { position: absolute; opacity: 0; pointer-events: none; }
+  .segmentado span { display: block; padding: .5rem 1.1rem; border-radius: 99px; cursor: pointer; font-size: .76rem; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; color: var(--tinta-suave); }
+  .segmentado input:checked + span { background: var(--noche); color: var(--blanco); }
+  .segmentado input:focus-visible + span { outline: 2px solid var(--ambar); outline-offset: 2px; }
+  .deslizador { display: grid; gap: .4rem; font-size: .9rem; }
+  .deslizador > span { display: flex; justify-content: space-between; color: var(--tinta-suave); }
+  .deslizador output { color: var(--tinta); font-weight: 700; font-variant-numeric: tabular-nums; }
+  input[type=range] { width: 100%; accent-color: var(--noche); height: 28px; }
+  .exactas summary { cursor: pointer; font-size: .85rem; font-weight: 600; text-decoration: underline; text-underline-offset: 3px; }
+  .exactas p { font-size: .82rem; color: var(--tinta-suave); margin: .6rem 0; }
+  .tres { display: grid; grid-template-columns: repeat(3, 1fr); gap: .5rem; }
+  .tres label { display: grid; gap: .3rem; font-size: .75rem; color: var(--tinta-suave); }
+  .tres input { min-height: 44px; padding: 0 .7rem; border: 1px solid var(--linea); border-radius: var(--radio); font-size: 1rem; background: var(--fondo); width: 100%; }
+
+  .resultado { border-top: 1px solid var(--linea); padding-top: 1.2rem; }
+  .recomendacion { margin: 0 0 .8rem; font-size: 1.05rem; }
+  .recomendacion strong { font-family: var(--f-titulo); font-weight: 400; font-size: 1.5rem; letter-spacing: .02em; }
+  .zonas { list-style: none; padding: 0; margin: 0; display: grid; gap: .6rem; }
+  .zonas :global(li) { display: grid; grid-template-columns: 12px 1fr auto; gap: .2rem .7rem; align-items: baseline; font-size: .9rem; }
+  .zonas :global(li i) { width: 10px; height: 10px; border-radius: 50%; transform: translateY(1px); }
+  .zonas :global(li b) { font-weight: 600; }
+  .zonas :global(li .valor) { font-variant-numeric: tabular-nums; color: var(--tinta-suave); font-size: .82rem; }
+  .zonas :global(li p) { grid-column: 2 / -1; margin: 0; color: var(--tinta-suave); font-size: .85rem; }
+  .links { display: flex; flex-wrap: wrap; gap: 1.2rem; margin: 0; }
+  .links a { font-size: .76rem; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; text-underline-offset: 4px; }
+  .aviso-legal { font-size: .75rem; color: var(--tinta-suave); margin: 0; }
+  [hidden] { display: none !important; }
+
+  @media (max-width: 900px) {
+    .probador { grid-template-columns: minmax(0, 1fr); }
+    /* en el celular el maniquí se queda arriba mientras movés los controles */
+    .visor { position: sticky; top: 64px; z-index: 4; height: 46vh; min-height: 300px; box-shadow: 0 10px 24px -18px rgba(0,0,0,.4); }
+    .pista { display: none; }
+    .controles-visor { top: 8px; left: 8px; right: 8px; }
+    .grupo-botones button, .boton-mapa { min-height: 30px; padding: 0 .65rem; font-size: .6rem; }
+  }
+</style>
+
+<script>
+  import { estimarCuerpo, analizar, recomendar, COLOR_NIVEL, type Prenda, type Sexo, type Ajuste, type TipoProbador } from '../scripts/cuerpo';
+  import { agregar, cop } from '../scripts/carrito';
+  import type { Probador } from '../scripts/probador3d';
+
+  interface Dato {
+    slug: string; nombre: string; tipo: TipoProbador; ajuste: Ajuste; capota: boolean; genero: string;
+    color: { nombre: string; hex: string }; precio: number; proximamente: boolean;
+    tallas: { talla: string; medidas: Prenda['medidas'] }[];
+  }
+  const datos: Dato[] = JSON.parse(document.getElementById('datos-probador')!.textContent || '[]');
+  const form = document.querySelector<HTMLFormElement>('[data-panel]')!;
+  const selPrenda = form.querySelector<HTMLSelectElement>('[data-prenda]')!;
+  const cajaTallas = form.querySelector<HTMLElement>('[data-tallas]')!;
+  const reco = form.querySelector<HTMLElement>('[data-recomendacion]')!;
+  const listaZonas = form.querySelector<HTMLElement>('[data-zonas]')!;
+  const btnAgregar = form.querySelector<HTMLButtonElement>('[data-agregar]')!;
+  const btnDrop = form.querySelector<HTMLAnchorElement>('[data-drop]')!;
+  const lnkDetalle = form.querySelector<HTMLAnchorElement>('[data-detalle]')!;
+  const visor = document.querySelector<HTMLElement>('[data-visor]')!;
+  const cargando = visor.querySelector<HTMLElement>('[data-cargando]')!;
+
+  // Estado inicial: la prenda viene en la URL (?prenda=slug) y el cuerpo se recuerda en este navegador.
+  const params = new URLSearchParams(location.search);
+  let actual = datos.find((d) => d.slug === params.get('prenda')) ?? datos[0];
+  let tallaElegida: string | null = params.get('talla');
+  try {
+    const guardado = JSON.parse(localStorage.getItem('monoir-cuerpo') || 'null');
+    if (guardado) for (const k of ['altura', 'peso', 'pecho', 'cintura', 'cadera'] as const) {
+      const el = form.elements.namedItem(k) as HTMLInputElement | null;
+      if (el && guardado[k]) el.value = String(guardado[k]);
+    }
+    if (guardado?.sexo) (form.querySelector(`input[name="sexo"][value="${guardado.sexo}"]`) as HTMLInputElement).checked = true;
+    else if (actual.genero === 'mujer') { (form.querySelector('input[name="sexo"][value="mujer"]') as HTMLInputElement).checked = true; (form.elements.namedItem('altura') as HTMLInputElement).value = '162'; (form.elements.namedItem('peso') as HTMLInputElement).value = '58'; }
+  } catch { /* sin almacenamiento */ }
+  selPrenda.value = actual.slug;
+
+  function leerCuerpo() {
+    const f = new FormData(form);
+    const num = (k: string) => { const v = parseFloat(String(f.get(k) ?? '')); return Number.isFinite(v) && v > 0 ? v : undefined; };
+    const entrada = { sexo: (f.get('sexo') as Sexo) || 'hombre', altura: num('altura') ?? 175, peso: num('peso') ?? 72, pecho: num('pecho'), cintura: num('cintura'), cadera: num('cadera') };
+    try { localStorage.setItem('monoir-cuerpo', JSON.stringify(entrada)); } catch { /* nada */ }
+    form.querySelector('[data-salida="altura"]')!.textContent = `${entrada.altura} cm`;
+    form.querySelector('[data-salida="peso"]')!.textContent = `${entrada.peso} kg`;
+    return estimarCuerpo(entrada);
+  }
+  const prendaDe = (d: Dato, talla: string): Prenda => ({ tipo: d.tipo, ajuste: d.ajuste, capota: d.capota, medidas: d.tallas.find((t) => t.talla === talla)?.medidas ?? {} });
+
+  let probador: Probador | null = null;
+  let pendiente3d = 0;
+
+  function pintar() {
+    const cuerpo = leerCuerpo();
+    const r = recomendar(actual.tallas.map((t) => ({ talla: t.talla, prenda: prendaDe(actual, t.talla) })), cuerpo);
+    if (!tallaElegida || !actual.tallas.some((t) => t.talla === tallaElegida)) tallaElegida = r.mejor;
+    // tallas
+    cajaTallas.innerHTML = '';
+    for (const t of actual.tallas) {
+      const l = document.createElement('label');
+      l.innerHTML = '<input type="radio" name="talla" /><span></span>';
+      const inp = l.querySelector('input')!;
+      inp.value = t.talla; inp.checked = t.talla === tallaElegida;
+      l.querySelector('span')!.textContent = t.talla;
+      if (t.talla === r.mejor) { const b = document.createElement('em'); b.className = 'reco'; b.textContent = 'Tu talla'; l.append(b); }
+      inp.addEventListener('change', () => { tallaElegida = t.talla; pintar(); });
+      cajaTallas.append(l);
+    }
+    const a = analizar(prendaDe(actual, tallaElegida!), cuerpo);
+    reco.innerHTML = tallaElegida === r.mejor
+      ? `Te recomendamos la <strong></strong>. ${a.resumen}`
+      : `Estás viendo la <strong></strong>. Tu talla es la ${r.mejor}. ${a.resumen}`;
+    reco.querySelector('strong')!.textContent = tallaElegida!;
+    listaZonas.innerHTML = '';
+    for (const z of a.zonas) {
+      const li = document.createElement('li');
+      li.innerHTML = '<i></i><b></b><span class="valor"></span><p></p>';
+      (li.querySelector('i') as HTMLElement).style.background = COLOR_NIVEL[z.nivel];
+      li.querySelector('b')!.textContent = z.nombre;
+      li.querySelector('.valor')!.textContent = z.valor;
+      li.querySelector('p')!.textContent = z.texto;
+      listaZonas.append(li);
+    }
+    btnAgregar.hidden = actual.proximamente;
+    btnDrop.hidden = !actual.proximamente;
+    btnAgregar.textContent = `Agregar talla ${tallaElegida} al carrito · ${cop(actual.precio)}`;
+    lnkDetalle.href = `/producto/${actual.slug}`;
+    history.replaceState(null, '', `?prenda=${actual.slug}`);
+    // el 3D se actualiza un instante después (los deslizadores mandan muchos cambios seguidos)
+    cancelAnimationFrame(pendiente3d);
+    pendiente3d = requestAnimationFrame(() => probador?.actualizar(cuerpo, prendaDe(actual, tallaElegida!), actual.color.hex, a.zonas));
+  }
+
+  selPrenda.addEventListener('change', () => { actual = datos.find((d) => d.slug === selPrenda.value) ?? actual; tallaElegida = null; pintar(); });
+  form.addEventListener('input', (e) => { if ((e.target as HTMLElement).getAttribute('name') !== 'talla' && e.target !== selPrenda) pintar(); });
+
+  btnAgregar.addEventListener('click', () => {
+    if (!tallaElegida || actual.proximamente) return;
+    agregar({ slug: actual.slug, nombre: `${actual.nombre} · ${actual.color.nombre}`, talla: tallaElegida, precio: actual.precio });
+    const toast = document.querySelector<HTMLElement>('[data-toast]');
+    if (toast) {
+      toast.innerHTML = 'Listo, quedó en tu carrito. <a href="/carrito">Ver carrito</a>';
+      toast.classList.add('visible');
+      setTimeout(() => toast.classList.remove('visible'), 3500);
+    }
+  });
+
+  // Controles del visor
+  visor.querySelectorAll<HTMLButtonElement>('[data-encuadre]').forEach((b) => b.addEventListener('click', () => {
+    visor.querySelectorAll<HTMLButtonElement>('[data-encuadre]').forEach((x) => { const on = x === b; x.classList.toggle('activo', on); x.setAttribute('aria-pressed', String(on)); });
+    probador?.encuadre(b.dataset.encuadre as 'prenda' | 'entero');
+  }));
+  const btnMapa = visor.querySelector<HTMLButtonElement>('[data-mapa]')!;
+  btnMapa.addEventListener('click', () => {
+    const on = btnMapa.getAttribute('aria-pressed') !== 'true';
+    btnMapa.setAttribute('aria-pressed', String(on));
+    visor.querySelector<HTMLElement>('[data-leyenda]')!.hidden = !on;
+    probador?.mapa(on);
+  });
+  visor.addEventListener('pointerdown', () => { visor.querySelector<HTMLElement>('[data-pista]')!.style.opacity = '0'; }, { once: true });
+
+  pintar();
+
+  // El 3D (three.js) se carga aparte para que la página abra rápido.
+  import('../scripts/probador3d').then(({ crearProbador }) => {
+    try {
+      probador = crearProbador(visor, visor.querySelector<HTMLElement>('[data-capa-etiquetas]')!);
+      visor.querySelector('canvas')!.style.touchAction = 'pan-y';
+      cargando.hidden = true;
+      pintar();
+    } catch (err) {
+      cargando.textContent = 'Tu navegador no puede mostrar el 3D, pero igual te decimos tu talla aquí al lado.';
+      console.error(err);
+    }
+  });
+</script>

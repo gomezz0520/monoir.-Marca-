@@ -5,6 +5,7 @@ import { tienda, formatoCOP } from '../data/config';
 const actual = Astro.url.pathname;
 const links = [
   { href: '/catalogo', texto: 'Catálogo' },
+  { href: '/perchero', texto: 'Perchero' },
   { href: '/#drop', texto: 'Próximo drop' },
   { href: '/el-mono', texto: 'El Mono' },
 ];
@@ -21,6 +22,7 @@ const links = [
       <summary aria-label="Abrir menú"><span></span><span></span></summary>
       <nav aria-label="Menú">
         {links.map((l) => <a href={l.href}>{l.texto}</a>)}
+        <a href="/probador">Probador 3D</a>
         <a href="/cambios-y-devoluciones">Cambios y devoluciones</a>
       </nav>
     </details>

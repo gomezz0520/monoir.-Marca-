@@ -102,6 +102,7 @@
 - Redes: **íconos** y una franja **"Monoir en la calle"** con 4 a 6 fotos escogidas a mano (no el feed de Instagram en vivo).
 
 **Versión 2:** perchero interactivo y cuentas de cliente / fidelización.
+- *Noviembre de 2026:* ya hay prototipos del **perchero** (estilo del video "Websites in 2026") y de un **probador 3D con medidas** (altura y peso → talla recomendada y mapa de ajuste). Están en una rama de pruebas. Ver `docs/investigacion-perchero-y-3d.md`.
 **Versión 3:** probador con cámara.
 
 ## 11. Compra y entrega

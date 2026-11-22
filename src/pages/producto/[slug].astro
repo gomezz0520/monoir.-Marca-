@@ -58,7 +58,10 @@ const generoTexto = p.genero === 'unisex' ? 'Unisex' : p.genero === 'hombre' ? '
         <fieldset class="tallas">
           <div class="tallas-cabeza">
             <legend>Talla</legend>
-            <button type="button" class="link-guia" data-abrir-guia>Guía de tallas</button>
+            <span class="links-talla">
+              {p.ajuste && ['camiseta', 'buzo', 'jogger', 'jean'].includes(p.tipo) && <a class="link-guia" href={`/probador?prenda=${p.slug}`}>Medítela en 3D</a>}
+              <button type="button" class="link-guia" data-abrir-guia>Guía de tallas</button>
+            </span>
           </div>
           <div class="tallas-opciones">
             {p.tallas.map((t) => (
@@ -143,7 +146,8 @@ const generoTexto = p.genero === 'unisex' ? 'Unisex' : p.genero === 'hombre' ? '
   .tallas { border: 0; padding: 0; margin: 0 0 1.2rem; }
   .tallas-cabeza { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: .7rem; }
   legend { float: left; font-size: .78rem; font-weight: 600; letter-spacing: .14em; text-transform: uppercase; padding: 0; }
-  .link-guia { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-size: .85rem; cursor: pointer; }
+  .link-guia { background: none; border: 0; padding: 0; text-decoration: underline; text-underline-offset: 3px; font-size: .85rem; cursor: pointer; color: inherit; }
+  .links-talla { display: inline-flex; gap: 1rem; }
   .tallas-opciones { display: flex; flex-wrap: wrap; gap: .5rem; clear: both; }
   .tallas-opciones input { position: absolute; opacity: 0; pointer-events: none; }
   .tallas-opciones span {

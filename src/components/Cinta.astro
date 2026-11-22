@@ -1,0 +1,21 @@
+---
+// Cinta que corre con mensajes, separada por el felino.
+import Felino from './Felino.astro';
+interface Props { mensajes: string[]; class?: string }
+const { mensajes, class: clase = '' } = Astro.props;
+---
+<div class={`cinta-corre ${clase}`} aria-label={mensajes.join('. ')}>
+  <div class="pista-cinta" aria-hidden="true">
+    {[0, 1].map(() => (
+      <p>{mensajes.map((m) => <><span>{m}</span><Felino size={16} ojos={false} /></>)}</p>
+    ))}
+  </div>
+</div>
+<style>
+  .cinta-corre { overflow: hidden; background: var(--noche); color: var(--hueso); border-block: 1px solid #000; }
+  .pista-cinta { display: flex; width: max-content; animation: correr 34s linear infinite; }
+  .cinta-corre p { display: flex; align-items: center; gap: 1.4rem; margin: 0; padding: .8rem .7rem; white-space: nowrap;
+    font-family: var(--f-titulo); text-transform: uppercase; letter-spacing: .1em; font-size: .92rem; }
+  .cinta-corre p :global(svg) { color: var(--ambar); }
+  @keyframes correr { to { transform: translateX(-50%); } }
+</style>

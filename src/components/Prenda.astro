@@ -4,8 +4,18 @@ import type { Tipo } from '../data/productos';
 interface Props {
   tipo: Tipo; color: string; lado: 'frente' | 'espalda';
   capota?: boolean; estampado?: boolean; class?: string;
+  /** Para meter el dibujo dentro de otro SVG (perchero): posición y tamaño. */
+  x?: number; y?: number; ancho?: number; alto?: number;
+  /** Dibuja el interior de la espalda que se ve por el cuello (cuando cuelga de un gancho). */
+  interior?: boolean;
 }
-const { tipo, color, lado, capota = false, estampado = false, class: clase = '' } = Astro.props;
+const { tipo, color, lado, capota = false, estampado = false, class: clase = '', x, y, ancho, alto, interior = false } = Astro.props;
+const anidado = ancho !== undefined ? { x, y, width: ancho, height: alto, overflow: 'visible' } : {};
+const oscurecer = (hex: string, f: number) => {
+  const n = parseInt(hex.slice(1), 16);
+  const c = (v: number) => Math.round(v * f).toString(16).padStart(2, '0');
+  return `#${c(n >> 16)}${c((n >> 8) & 255)}${c(n & 255)}`;
+};
 
 // Costuras: un poco más claras sobre telas oscuras y más oscuras sobre claras.
 const lum = (hex: string) => {
@@ -18,8 +28,13 @@ const marca = oscura ? 'rgba(255,255,255,.75)' : 'rgba(0,0,0,.7)';
 const frente = lado === 'frente';
 const felinoMini = 'M46 91 C33 90 22 83 17 69 C12 53 14 34 22 13 L40 31 C46 28.5 54 28.5 60 31 L78 13 C86 34 88 53 83 69 C78.5 82 69 89.5 57 91';
 ---
-<svg class={`prenda ${clase}`} viewBox="0 0 400 500" aria-hidden="true">
+<svg class={`prenda ${clase}`} viewBox="0 0 400 500" aria-hidden="true" {...anidado}>
   <g stroke={costura} stroke-width="2" stroke-linejoin="round" stroke-linecap="round">
+    {interior && frente && (tipo === 'camiseta' || (tipo === 'buzo' && !capota)) && (
+      <path fill={oscurecer(color, 0.72)} stroke="none"
+        d={tipo === 'camiseta' ? 'M140 72 Q200 58 260 72 L260 80 Q200 104 140 80 Z' : 'M128 88 Q200 74 272 88 L272 96 Q200 124 128 96 Z'} />
+    )}
+    <slot name="gancho" />
     {tipo === 'camiseta' && (
       <>
         <path fill={color} d="M140 72 Q200 100 260 72 L338 100 L392 192 L330 218 L314 192 L314 452 Q200 464 86 452 L86 192 L70 218 L8 192 L62 100 Z" />

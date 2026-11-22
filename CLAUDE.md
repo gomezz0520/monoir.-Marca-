@@ -8,6 +8,11 @@ Tienda web de **MONOIR**, marca de streetwear de Medellín. El brief completo es
 - Antes de decisiones grandes (diseño, estructura, funciones nuevas), muestra opciones y espera su aprobación.
 - **Estado actual:** el fundador eligió la **dirección A — "NOCHE"**. La versión 1 está construida con **Astro** (sitio estático). Las prendas se muestran con ilustraciones SVG (`src/components/Prenda.astro`) hasta que haya fotos reales; al agregar `fotos` en un producto, estas reemplazan la ilustración.
 - Datos editables: `src/data/productos.ts` (catálogo) y `src/data/config.ts` (WhatsApp, redes, envío, drop). Los valores marcados `PENDIENTE` son de ejemplo.
+- **Respaldo:** la versión 1 (antes del perchero y el 3D) está en la rama `respaldo-v1`. `main` es la que publica Vercel.
+- **Prototipos (rama `claude/lucid-cray-hw3e2f`, aún no en `main`):**
+  - `/perchero` (`src/pages/perchero.astro`, `src/scripts/perchero.ts`, `src/components/PrendaColgada.astro`): percheros por categoría inspirados en el video de referencia. Los productos con el mismo `modelo` son la misma prenda en otro color (etiquetas colgando).
+  - `/probador` (`src/pages/probador.astro`, `src/scripts/cuerpo.ts`, `src/scripts/probador3d.ts`): maniquí 3D con altura y peso, la prenda en cada talla con las medidas de la guía, recomendación de talla y mapa de ajuste. Usa three.js, cargado aparte. El campo `ajuste` de cada producto define el corte.
+  - Investigación y costos: `docs/investigacion-perchero-y-3d.md`.
 - Paleta NOCHE: negro `#0b0b0c`, hueso `#f2efe9`, blanco `#fafaf7`, humo `#8a8a8e`, ámbar `#e8a23a` (sobre fondo claro, para texto usar `#8f5a0c`). Letras: Bodoni Moda (marca), Anton (títulos), Inter (texto).
 
 ## Reglas de marca (no negociables)
